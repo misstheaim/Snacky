@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SubmissionResource\Pages;
 
 use App\Filament\Resources\SubmissionResource;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 
 class ListSubmissions extends ListRecords
@@ -14,6 +15,10 @@ class ListSubmissions extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Action::make('refresh')
+                ->action(function () {
+                    $this->resetTable();
+                })
         ];
     }
 }

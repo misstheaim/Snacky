@@ -58,6 +58,11 @@ class User extends Authenticatable
         return $this->hasMany(Snack::class);
     }
 
+    public function votes() :HasMany
+    {
+        return $this->hasMany(Vote::class);
+    }
+
 
     public function isAdmin() :bool
     {

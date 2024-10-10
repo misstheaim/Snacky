@@ -123,4 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+
+    'vote_limit_per_user' => env('VOTE_LIMIT_PER_USER', 3)
+
 ];

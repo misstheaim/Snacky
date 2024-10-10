@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SnackResource\Pages;
 use App\Filament\Resources\SnackResource\RelationManagers;
+use App\Filament\Resources\Templates\SnackTemplates;
 use App\Models\Snack;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -33,51 +35,20 @@ class SnackResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                TextInput::make('name')->required(),
-                Select::make('category_id')
-                    ->required()
-                    ->relationship('category', 'name'),
-                Textarea::make('description')
-                    ->helperText('Optional')
-                    ->placeholder('Here you can write something about your product'),
-                TextInput::make('link')
-                    ->required()
-                    ->activeUrl()
-                    ->label('Add a link to the product on korzinka.uz')
-                    ->validationMessages([
-                        'required' => 'Please add a link to the product.',
-                        'active_url' => 'This field must be a valid URL.'
-                    ]),
-                TextColumn::make('status')
-                    ->state(function (Snack $record) {
-                        return match($record->status) {
-                            'APPROVED' => 'Approved',
-                            'DISAPPROVED' => 'Disapproved',
-                            'IN_PROCESS' => 'In process'
-                        };
-                    })
-                    ->badge()
-                    ->color(fn (string $state) => match($state) {
-                        'Approved' => 'green',
-                        'Disapproved' => 'red',
-                        'In process' => 'gray'
-                    }),
-                Hidden::make('user_id')
-                    ->default(fn () => Auth::user()->id)
-            ]);
+            ->schema(SnackTemplates::getForm());
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(TableController::getSnackTable())
+            ->columns(SnackTemplates::getTable())
             ->filters([
                 //
             ])
             ->query(Auth::user()->isDev() ? Snack::query()->where('status', 'APPROVED') : Snack::query())
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

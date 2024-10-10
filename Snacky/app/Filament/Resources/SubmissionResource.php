@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SubmissionResource\Pages;
 use App\Filament\Resources\SubmissionResource\RelationManagers;
+use App\Filament\Resources\Templates\SnackTemplates;
 use App\Models\Snack;
 use App\Models\Submission;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -35,38 +37,19 @@ class SubmissionResource extends Resource
 
     public static function canViewAny() :bool
     {
-        return !Auth::user()->isManager();
+        return ! Auth::user()->isManager(); 
     }
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                TextInput::make('name')->required(),
-                Select::make('category_id')
-                    ->required()
-                    ->relationship('category', 'name'),
-                Textarea::make('description')
-                    ->helperText('Optional')
-                    ->placeholder('Here you can write something about your product'),
-                TextInput::make('link')
-                    ->required()
-                    ->activeUrl()
-                    ->label('Add a link to the product on korzinka.uz')
-                    ->validationMessages([
-                        'required' => 'Please add a link to the product.',
-                        'active_url' => 'This field must be a valid URL.'
-                    ]),
-                Hidden::make('user_id')
-                    ->default(fn () => Auth::user()->id)
-
-            ]);
+            ->schema(SnackTemplates::getForm());
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(TableController::getSnackTable())
+            ->columns(SnackTemplates::getTable())
             ->filters([
                 
             ])

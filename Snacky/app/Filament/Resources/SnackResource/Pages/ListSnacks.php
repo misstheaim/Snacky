@@ -4,7 +4,9 @@ namespace App\Filament\Resources\SnackResource\Pages;
 
 use App\Filament\Resources\SnackResource;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Auth;
 
 class ListSnacks extends ListRecords
 {
@@ -12,8 +14,17 @@ class ListSnacks extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
+        return Auth::user()->isDev() ? [
+            Action::make('refresh')
+                ->action(function () {
+                    $this->resetTable();
+                })
+        ] : [
             Actions\CreateAction::make(),
+            Action::make('refresh')
+                ->action(function () {
+                    $this->resetTable();
+                })
         ];
     }
 }
