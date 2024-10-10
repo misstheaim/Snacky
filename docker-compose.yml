@@ -1,0 +1,37 @@
+
+services:
+  php: 
+    build:
+      context: .
+      dockerfile: DockerFile
+    volumes:
+      - ./Snacky:/var/www/
+    depends_on:
+      - database
+    container_name: php_con
+
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./Snacky:/var/www/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - "81:80"
+    container_name: nginx_con
+    depends_on:
+      - php
+
+
+  database:
+    image: mysql:8.0
+    restart: unless-stopped
+    volumes:
+      - ./tmp/db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: snacky-database
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 82:3306
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    container_name: mysql_database
