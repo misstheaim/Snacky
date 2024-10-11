@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SnackResource\Pages;
 use App\Filament\Resources\SnackResource\RelationManagers;
+use App\Filament\Resources\Templates\HelperFunctions;
 use App\Filament\Resources\Templates\SnackTemplates;
 use App\Models\Snack;
 use App\Models\User;
@@ -45,7 +46,7 @@ class SnackResource extends Resource
             ->filters([
                 //
             ])
-            ->query(Auth::user()->isDev() ? Snack::query()->where('status', 'APPROVED') : Snack::query())
+            ->query(HelperFunctions::isUser(Auth::user())->isDev() ? Snack::query()->where('status', 'APPROVED') : Snack::query())
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),

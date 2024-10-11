@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Templates;
 
 use App\Models\Snack;
+use App\Models\User;
 use App\Models\Vote;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -26,27 +27,11 @@ class SnackTemplates
         $up_vote = 'UPVOTE';
         $down_vote = 'DOWNVOTE';
 
-        function votingFun(Snack $record, string $vote_type, mixed $user_id)
-        {
-            $vote_count = Vote::where('user_id', $user_id)->count();
-            $query = Vote::where('user_id', $user_id)
-                ->where('vote_type', $vote_type)
-                ->where('snack_id', $record->id);
-            if ($query->exists()) {
-                $query->delete();
-            } else if ($vote_count < config('app.vote_limit_per_user')) {
-                Vote::create([
-                    'vote_type' => $vote_type,
-                    'user_id' => $user_id,
-                    'snack_id' => $record->id
-                ]);
-            } else {
-                Notification::make()
-                    ->title("Your voting limit is exhausted\r\nThe current limit is: " . config('app.vote_limit_per_user'))
-                    ->warning()
-                    ->send();
-            }
-        }
+        
+        $isAdmin = HelperFunctions::isUser(Auth::user())->isAdmin();
+        $isDev = HelperFunctions::isUser(Auth::user())->isDev();
+        $isManager = HelperFunctions::isUser(Auth::user())->isManager();
+
 
         $table = array(
             TextColumn::make('name'),
@@ -64,17 +49,11 @@ class SnackTemplates
                 ->counts([
                     'votes' => fn (Builder $query) => $query->where('vote_type', $up_vote)
                 ])
-                ->action(fn (Snack $record) => votingFun($record, $up_vote, $user_id))
+                ->action(fn (Snack $record) => HelperFunctions::votingFun($record, $up_vote, $user_id))
                 ->label('Upvotes')
                 ->icon('heroicon-o-hand-thumb-up')
-                ->iconColor(function (Snack $record) use($up_vote) {
-                    if ($record->votes()
-                        ->where('user_id', Auth::user()->id)
-                        ->where('snack_id', $record->id)
-                        ->where('vote_type', $up_vote)
-                        ->exists()) {
-                        return 'primary';
-                    }
+                ->iconColor(function (Snack $record) use($up_vote, $user_id) {
+                        return HelperFunctions::setIconColor($record, $user_id, $up_vote);
                 })
                 ->sortable()
                 ->hidden(function (Table $table){
@@ -82,17 +61,11 @@ class SnackTemplates
                 }),
             TextColumn::make('votes_count_down')
                 ->getStateUsing(fn (Snack $record) => $record->votes()->where('vote_type', $down_vote)->count())
-                ->action(fn (Snack $record) => votingFun($record, $down_vote, $user_id))
+                ->action(fn (Snack $record) => HelperFunctions::votingFun($record, $down_vote, $user_id))
                 ->label('Downvotes')
                 ->icon('heroicon-o-hand-thumb-down')
-                ->iconColor(function (Snack $record) use($down_vote) {
-                    if ($record->votes()
-                        ->where('user_id', Auth::user()->id)
-                        ->where('snack_id', $record->id)
-                        ->where('vote_type', $down_vote)
-                        ->exists()) {
-                        return 'primary';
-                    }
+                ->iconColor(function (Snack $record) use($down_vote, $user_id) {
+                    return HelperFunctions::setIconColor($record, $user_id, $down_vote);
                 })
                 ->sortable(query: function (Builder $query, string $direction) use($down_vote) {
                     return $query->withCount([
@@ -107,7 +80,7 @@ class SnackTemplates
             TextColumn::make('user.name')
         );
 
-        if (Auth::user()->isDev()) {
+        if ($isDev) {
             $table[] = TextColumn::make('status')
                 ->state(function (Snack $record) {
                     return match($record->status) {
@@ -128,7 +101,7 @@ class SnackTemplates
                 });
         }
 
-        if (Auth::user()->isManager() || Auth::user()->isAdmin()) {
+        if ($isManager || $isAdmin) {
             $table[] = SelectColumn::make('status')
                 ->options([
                     'APPROVED' => 'Approved',
@@ -146,6 +119,10 @@ class SnackTemplates
 
     public static function getForm() :array
     {
+        $isAdmin = HelperFunctions::isUser(Auth::user())->isAdmin();
+        $isManager = HelperFunctions::isUser(Auth::user())->isManager();
+
+
         $from = array(
             TextInput::make('name')->required(),
             Select::make('category_id')
@@ -166,7 +143,7 @@ class SnackTemplates
                 ->default(fn () => Auth::user()->id)
         );
 
-        if (Auth::user()->isManager() || Auth::user()->isAdmin()) {
+        if ($isManager || $isAdmin) {
             $table[] = SelectColumn::make('status')
                 ->options([
                     'APPROVED' => 'Approved',
@@ -180,8 +157,45 @@ class SnackTemplates
         return $from;
     }
 
+}
 
-    
 
+class HelperFunctions
+{
+    public static function votingFun(Snack $record, string $vote_type, mixed $user_id)
+    {
+        $vote_count = Vote::where('user_id', $user_id)->count();
+        $query = Vote::where('user_id', $user_id)
+            ->where('vote_type', $vote_type)
+            ->where('snack_id', $record->id);
+        if ($query->exists()) {
+            $query->delete();
+        } else if ($vote_count < config('app.vote_limit_per_user')) {
+            Vote::create([
+                'vote_type' => $vote_type,
+                'user_id' => $user_id,
+                'snack_id' => $record->id
+            ]);
+        } else {
+            Notification::make()
+                ->title("Your voting limit is exhausted\r\nThe current limit is: " . config('app.vote_limit_per_user'))
+                ->warning()
+                ->send();
+        }
+    }
 
+    public static function setIconColor(Snack $record, $user_id, $vote_type) 
+    {
+        if ($record->votes()
+            ->where('user_id', $user_id)
+            ->where('snack_id', $record->id)
+            ->where('vote_type', $vote_type)
+            ->exists()) {
+            return 'primary';
+        }
+    }
+
+    public static function isUser(User $user) :User {
+        return $user;
+    }
 }

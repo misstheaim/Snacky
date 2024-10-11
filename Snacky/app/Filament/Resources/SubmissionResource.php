@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SubmissionResource\Pages;
 use App\Filament\Resources\SubmissionResource\RelationManagers;
+use App\Filament\Resources\Templates\HelperFunctions;
 use App\Filament\Resources\Templates\SnackTemplates;
 use App\Models\Snack;
 use App\Models\Submission;
@@ -37,7 +38,7 @@ class SubmissionResource extends Resource
 
     public static function canViewAny() :bool
     {
-        return ! Auth::user()->isManager(); 
+        return ! HelperFunctions::isUser(Auth::user())->isManager(); 
     }
 
     public static function form(Form $form): Form
