@@ -6,11 +6,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "dutchcodingcompany/filament-socialite": "^2.2",
         "filament/filament": "^3.2",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
-        "livewire/livewire": "^3.5"
+        "livewire/livewire": "^3.5",
+        "owenvoke/blade-fontawesome": "^2.6",
+        "spatie/crawler": "^8.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //$table->foreignId('role')->nullable(true)->constrained('roles');
-            $table->unsignedBigInteger('role')->nullable();
+            $table->unsignedBigInteger('role')->nullable()->default(3);
             $table->foreign('role')->references('id')->on('roles');
         });
     }
@@ -25,6 +25,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign('users_role_foreign');
+            $table->dropColumn('role');
         });
     }
 };
