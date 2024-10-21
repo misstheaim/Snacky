@@ -14,12 +14,17 @@ return new class extends Migration
         Schema::create('snacks', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
-            $table->string('name');
-            $table->text('description')->nullable();
+            $table->unsignedBigInteger('uzum_product_id')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users');
+            $table->foreignId('category_id')->nullable()->constrained('categories', 'uzum_category_id')->cascadeOnDelete();
+            $table->string('title_ru')->nullable();
+            $table->string('title_uz')->nullable();
+            $table->text('description_ru')->nullable();
+            $table->text('description_uz')->nullable();
             $table->float('price')->nullable();
             $table->string('link');
+            $table->string('low_image_link')->nullable();
+            $table->string('high_image_link')->nullable();
             $table->enum('status', ['IN_PROCESS', 'APPROVED', 'DISAPPROVED']);
         });
     }

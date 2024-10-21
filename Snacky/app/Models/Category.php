@@ -20,11 +20,11 @@ class Category extends Model
 
     public function parent() :BelongsTo
     {
-        return $this->belongsTo(Category::class, 'parent_id', 'id');
+        return $this->belongsTo(Category::class, 'parent_id', 'uzum_category_id');
     }
 
     public function childrens() :HasMany
     {
-        return $this->hasMany(Category::class, 'parent_id', 'id');
+        return $this->hasMany(Category::class, 'parent_id', 'uzum_category_id');
     }
 }

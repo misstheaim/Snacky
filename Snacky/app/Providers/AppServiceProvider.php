@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\HttpCategoriesReceiver;
+use App\Contracts\HttpProductReceiver;
+use App\Services\UzumHttpCategoriesReceiver;
+use App\Services\UzumHttpProductReceiver;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+
+    public $bindings = [
+        HttpCategoriesReceiver::class => UzumHttpCategoriesReceiver::class,
+        HttpProductReceiver::class => UzumHttpProductReceiver::class,
+    ];
 
     /**
      * Bootstrap any application services.
