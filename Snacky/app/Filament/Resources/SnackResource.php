@@ -8,14 +8,20 @@ use App\Filament\Resources\Templates\HelperFunctions;
 use App\Filament\Resources\Templates\SnackTemplates;
 use App\Models\Snack;
 use App\Models\User;
+use App\Services\Helpers\HelperSortProductData;
+use App\Services\UzumHttpProductReceiver;
+use Filament\Actions\CreateAction;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Illuminate\Support\Str;
 use Filament\Tables;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -33,6 +39,8 @@ class SnackResource extends Resource
 
     protected static ?string $label = 'Snack';
 
+    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -48,8 +56,13 @@ class SnackResource extends Resource
             ])
             ->query(HelperFunctions::isUser(Auth::user())->isDev() ? Snack::query()->where('status', 'APPROVED') : Snack::query())
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make()
+                        ->form(SnackTemplates::getViewForm()),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
+                
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

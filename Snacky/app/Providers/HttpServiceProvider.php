@@ -31,21 +31,29 @@ class HttpServiceProvider extends ServiceProvider
                 'x-iid' => config('uzum.x_iid_header'),
             ])
                 ->baseUrl(config('uzum.token_url'))
-                ->throw()
-                ->retry(2, 1000);
+                ->retry(2, 1000, throw: false);
         });
 
 
         Http::macro('getUzumProductGraphQl', function() {
             return Http::withHeaders([
-                'Host' => 'graphql.uzum.uz',
                 'User-Agent' => config('uzum.user_agent_header'),
                 'Content-Type' => 'application/json',
                 'x-iid' => config('uzum.x_iid_header'),
             ])
                 ->baseUrl(config('uzum.graphql_url'))
-                ->throw()
-                ->retry(2, 1000);
+                ->retry(2, 1000, throw: false);
+        });
+
+
+        Http::macro('getUzumCategoriesGraphQl', function() {
+            return Http::withHeaders([
+                'User-Agent' => config('uzum.user_agent_header'),
+                'apollographql-client-name' => 'web-customers',
+                'x-iid' => config('uzum.x_iid_header'),
+            ])
+                ->baseUrl(config('uzum.graphql_url'))
+                ->retry(2, 1000, throw: false);
         });
 
 
@@ -56,8 +64,7 @@ class HttpServiceProvider extends ServiceProvider
                 'x-iid' => config('uzum.x_iid_header'),
             ])
                 ->baseUrl(config('uzum.product_url'))
-                ->throw()
-                ->retry(2, 1000);
+                ->retry(2, 1000, throw: false);
         });
 
 
@@ -69,8 +76,7 @@ class HttpServiceProvider extends ServiceProvider
                 'x-iid' => config('uzum.x_iid_header'),
             ])
                 ->baseUrl(config('uzum.categories_url'))
-                ->throw()
-                ->retry(2, 1000);
+                ->retry(2, 1000, throw: false);
         });
     }
 }

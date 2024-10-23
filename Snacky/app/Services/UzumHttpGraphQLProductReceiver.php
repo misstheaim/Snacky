@@ -3,14 +3,14 @@
 namespace App\Services;
 
 use App\Contracts\HttpProductReceiver;
-use Illuminate\Support\Facades\Cache;
+use App\Services\UzumHelpers\UzumTokenReceiver;
 use Illuminate\Support\Facades\Http;
 
 class UzumHttpGraphQLProductReceiver implements HttpProductReceiver
 {
     public function receiveProductData($productId) :array
     {
-        $token = $this->getToken();
+        $token = UzumTokenReceiver::getToken();
         $response = Http::getUzumProductGraphQl()
             ->withOptions([
                 'curl' => [                                 //
@@ -33,25 +33,14 @@ class UzumHttpGraphQLProductReceiver implements HttpProductReceiver
         
     }
 
-    public function addReceivedDataToDatabase()
+    public function addReceivedDataToDatabase($data)
     {
         
     }
 
-    public function makeWork()
+    public function makeWork($productId)
     {
 
-    }
-
-    private function receiveToken() :string
-    {
-        $response = Http::getUzumToken()->post('/');
-
-        return $response->cookies()->getCookieByName('access_token')->getValue();
-    }
-
-    private function getToken() :string {
-        return Cache::remember('uzum-api-token', 240, fn() => $this->receiveToken());
     }
 
     private function getGraphQlQuery(array $variables) :array

@@ -2,18 +2,18 @@
 
 namespace App\Console\Commands;
 
-use App\Contracts\HttpProductReceiver;
-use App\Models\Snack;
+use App\Services\UzumHttpGraphQlCategoriesReceiver;
+use App\Services\UzumHttpProductReceiver;
 use Illuminate\Console\Command;
 
-class SnackUpdate extends Command
+class ddd extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'update-snacks';
+    protected $signature = 'ddd';
 
     /**
      * The console command description.
@@ -25,10 +25,8 @@ class SnackUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle(HttpProductReceiver $receiver)
+    public function handle(UzumHttpProductReceiver $receiver)
     {
-        $this->withProgressBar(Snack::all(), function (Snack $snack) use($receiver) {
-            $receiver->makeWork($snack->uzum_product_id);
-        });
+        $receiver->makeWork(152133333490);
     }
 }

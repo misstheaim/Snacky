@@ -1,6 +1,7 @@
 <?php
 
 return array(
+    'hostname' => env('UZUM_HOST'),
     'graphql_url' => env('UZUM_GRAPHQL_URL'),
     'token_url' => env('UZUM_TOKEN_URL'),
     'categories_url' => env('UZUM_CATEGORIES_URL'),

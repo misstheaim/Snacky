@@ -18,4 +18,14 @@ class CategoryPolicy
     {
         return $user->isManager() || $user->isAdmin();
     }
+
+    public function create(User $user) :bool
+    {
+        return false;
+    }
+
+    public function delete(User $user) :bool
+    {
+        return false;
+    }
 }

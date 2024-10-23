@@ -15,7 +15,7 @@ class Category extends Model
 
     public function snacks() : HasMany 
     {
-        return $this->hasMany(Snack::class);
+        return $this->hasMany(Category::class, 'category_id', 'uzum_category_id');
     }
 
     public function parent() :BelongsTo

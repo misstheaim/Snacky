@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->enum('vote_type', ['UPVOTE', 'DOWNVOTE']);
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('snack_id')->constrained('snacks');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('snack_id')->constrained('snacks')->cascadeOnDelete();
         });
     }
 

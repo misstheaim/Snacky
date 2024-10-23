@@ -13,7 +13,7 @@ class ReceiveCategories extends Command
      *
      * @var string
      */
-    protected $signature = 'app:receive-categories';
+    protected $signature = 'receive-categories';
 
     /**
      * The console command description.

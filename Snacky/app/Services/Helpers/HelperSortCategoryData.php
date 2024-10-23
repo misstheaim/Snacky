@@ -5,6 +5,34 @@ namespace App\Services\Helpers;
 
 class HelperSortCategoryData
 {
+    public static function getCategoriesGraphQl(array $response, array $parentsId) :array
+    {
+        $result = array();
+
+        $response = $response['data']['makeSearch']['categoryTree'];
+
+        foreach ($response as $record) {
+            if($record['category']['id'] === 1) continue;
+            $parent_id = $record['category']['parent']['id'];
+            if (in_array($parent_id, $parentsId)) {
+                $parentsId[] = $record['category']['id'];
+                $data = array();
+
+                $data['title_ru'] = $record['category']['title_ru'];
+                $data['title_uz'] = $record['category']['title_uz'];
+                $data['uzum_category_id'] = $record['category']['id'];
+                $data['parent_id'] = $parent_id;
+
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+    }
+
+
+
+
     public static function getCategoriesByParent(array $array, array $parentNames) :array
     {
         $result = array();

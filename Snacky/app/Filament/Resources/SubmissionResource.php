@@ -56,7 +56,12 @@ class SubmissionResource extends Resource
             ])
             ->query(Snack::query()->where('user_id', Auth::user()->id))
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make()
+                        ->form(SnackTemplates::getViewForm()),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
