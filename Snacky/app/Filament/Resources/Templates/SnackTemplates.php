@@ -9,6 +9,7 @@ use App\Models\Vote;
 use App\Services\Helpers\HelperSortProductData;
 use App\Services\UzumHttpProductReceiver;
 use Closure;
+use DateInterval;
 use Doctrine\DBAL\Schema\Schema;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -61,6 +62,7 @@ class SnackTemplates
                 ->label('Image')
                 ->alignCenter(),
             TextColumn::make('category.title_ru')
+                ->sortable()
                 ->width('30%')
                 ->wrap(),
             TextColumn::make('description_ru')
@@ -86,7 +88,13 @@ class SnackTemplates
                 ->iconColor(function (Snack $record) use($up_vote, $user_id) {
                         return HelperFunctions::setIconColor($record, $user_id, $up_vote);
                 })
-                ->sortable()
+                ->sortable(query: function (Builder $query, string $direction) {
+                    $direction = match($direction) {
+                        'asc' => 'desc',
+                        'desc' => 'asc',
+                    };
+                    return $query->orderBy('votes_count', $direction);
+                })
                 ->hidden(function (Table $table){
                     return $table->getModelLabel() == 'Submission' ? true : false;
                 }),
@@ -102,6 +110,10 @@ class SnackTemplates
                     return HelperFunctions::setIconColor($record, $user_id, $down_vote);
                 })
                 ->sortable(query: function (Builder $query, string $direction) use($down_vote) {
+                    $direction = match($direction) {
+                        'asc' => 'desc',
+                        'desc' => 'asc',
+                    };
                     return $query->withCount([
                         'votes as down_votes' => function (Builder $query) use($down_vote) {
                             $query->where('vote_type', $down_vote);
@@ -112,6 +124,7 @@ class SnackTemplates
                     return $table->getModelLabel() == 'Submission' ? true : false;
                 }),
             TextColumn::make('user.name')
+                ->searchable()
         );
 
         if ($isDev) {
@@ -284,16 +297,22 @@ class HelperFunctions
     {
         $self_click = false;
         $if_deleted = false;
-        $vote_count = Vote::where('user_id', $user_id)->count();
         $query = Vote::where('user_id', $user_id)
             ->where('snack_id', $record->id);
         if ($query->exists()) {
             $self_click = $query->select('vote_type')->first()->vote_type === $vote_type;
-            $query->delete();
-            $if_deleted = true;
+            if ($self_click) {
+                $query->delete();
+                $if_deleted = true;
+            } else {
+                $query->update(['vote_type' => $vote_type]);
+                return;
+            }
+            
         }
         if (!$self_click) {
-            if ($if_deleted || $vote_count < config('app.vote_limit_per_user')) {
+            $check = self::checkVoteLimit($user_id);
+            if ($if_deleted || $check['is_available']) {
                 Vote::create([
                     'vote_type' => $vote_type,
                     'user_id' => $user_id,
@@ -301,12 +320,26 @@ class HelperFunctions
                 ]);
             } else {
                 Notification::make()
-                    ->title("Your voting limit is exhausted\r\nThe current limit is: " . config('app.vote_limit_per_user'))
+                    ->title("Your voting limit is exhausted\r\nThe current limit is: " . config('app.vote_limit_per_user') . " Next vote available at: " . date_add($check['expire'], DateInterval::createFromDateString('5 hours')))
                     ->warning()
                     ->send();
             }
         }
     }
+
+
+    public static function checkVoteLimit($user_id) :array
+    {
+        $expire = null;
+        $interval = DateInterval::createFromDateString(config('app.vote_limit_timeout'));
+        $expire_time = date_sub(now(), $interval);
+        $vote_count = Vote::where('user_id', $user_id)->where('created_at', '>', $expire_time)->count();
+        if ($vote_count > 0) {
+            $expire = date_add(Vote::where('user_id', $user_id)->where('created_at', '>', $expire_time)->first()->created_at, $interval);
+        }
+        return array('is_available' => $vote_count < config('app.vote_limit_per_user'), 'expire' => $expire);
+    }
+
 
     public static function setIconColor(Snack $record, $user_id, $vote_type) 
     {

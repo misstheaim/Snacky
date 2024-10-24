@@ -15,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CategoryResource extends Resource
@@ -34,16 +35,23 @@ class CategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultGroup(/* 'parent.title_ru' */Group::make('parent.title_ru')
+            ->defaultGroup(Group::make('parent.title_ru')
                 ->orderQueryUsing(fn (Builder $query) => $query->orderBy('parent_id', 'asc'))
                 ->groupQueryUsing(fn (Builder $query) => $query->groupBy('parent_id'))
                 ->collapsible()
                 ->titlePrefixedWithLabel(false)
             )
-            ->defaultPaginationPageOption('all')
+            ->defaultPaginationPageOption(10)
             ->columns([
                 TextColumn::make('title_ru')
                     ->label('Title'),
+                TextColumn::make('snacks_count')
+                    ->counts('snacks')
+                    ->label('Snacks count')
+                    ->alignCenter()
+                    ->state(function (Model $record) {
+                        return $record->snacks_count != 0 ?? '' ;
+                    }),
                 TextColumn::make('parent.title_ru'),
             ])
             ->filters([

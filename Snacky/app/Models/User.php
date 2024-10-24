@@ -66,16 +66,16 @@ class User extends Authenticatable
 
     public function isAdmin() :bool
     {
-        return $this->roles()->select('role')->value('role') === "ADMIN";
+        return $this->roles()->select('role')->value('role') === config('app.admin_role');
     }
 
     public function isManager() :bool
     {
-        return $this->roles()->select('role')->value('role') === "MANAGER";
+        return $this->roles()->select('role')->value('role') === config('app.manager_role');
     }
 
     public function isDev() :bool
     {
-        return $this->roles()->select('role')->value('role') === "DEV";
+        return $this->roles()->select('role')->value('role') === config('app.dev_role');
     }
 }
