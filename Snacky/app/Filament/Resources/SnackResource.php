@@ -2,34 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use App\Contracts\Filament\Snack\TableTemplate;
+use App\Contracts\Filament\Snack\FormTemplate;
+use App\Contracts\Filament\Snack\ViewTemplate;
 use App\Filament\Resources\SnackResource\Pages;
-use App\Filament\Resources\SnackResource\RelationManagers;
-use App\Filament\Resources\Templates\HelperFunctions;
-use App\Filament\Resources\Templates\SnackTemplates;
-use App\Models\Category;
+use App\Filament\Resources\Helpers\HelperFunctions;
 use App\Models\Snack;
-use App\Models\User;
-use App\Services\Helpers\HelperSortProductData;
-use App\Services\UzumHttpProductReceiver;
-use Filament\Actions\CreateAction;
-use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Illuminate\Support\Str;
 use Filament\Tables;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Columns\SelectColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
 class SnackResource extends Resource
@@ -41,26 +26,25 @@ class SnackResource extends Resource
     protected static ?string $slug = 'snacks';
 
     protected static ?string $label = 'Snack';
-
     
 
     public static function form(Form $form): Form
     {
         return $form
-            ->schema(SnackTemplates::getForm());
+            ->schema(App::make(FormTemplate::class)());
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->groups([
+            ->defaultGroup(
                 Group::make('category.title_ru')
                     ->orderQueryUsing(fn (Builder $query, $direction) => $query->join('categories', 'snacks.category_id', 'categories.uzum_category_id')->orderBy('categories.title_ru', $direction))
                     ->groupQueryUsing(fn (Builder $query) => $query->groupBy('category_id'))
                     ->collapsible()
                     ->titlePrefixedWithLabel(false)
-            ])
-            ->columns(SnackTemplates::getTable())
+            )
+            ->columns(App::make(TableTemplate::class)())
             ->searchPlaceholder('Search by User')
             ->searchOnBlur()
             ->filters([
@@ -71,7 +55,7 @@ class SnackResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ViewAction::make()
-                        ->form(SnackTemplates::getViewForm()),
+                        ->form(App::make(ViewTemplate::class)()),
                     Tables\Actions\DeleteAction::make(),
                 ]),
                 

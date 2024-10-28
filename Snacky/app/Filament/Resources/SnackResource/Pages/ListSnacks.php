@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\SnackResource\Pages;
 
 use App\Filament\Resources\SnackResource;
-use App\Filament\Resources\Templates\HelperFunctions;
+use App\Filament\Resources\Helpers\HelperFunctions;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;

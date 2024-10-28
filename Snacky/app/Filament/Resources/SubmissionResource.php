@@ -2,28 +2,17 @@
 
 namespace App\Filament\Resources;
 
+use App\Contracts\Filament\Snack\TableTemplate;
+use App\Contracts\Filament\Snack\FormTemplate;
+use App\Contracts\Filament\Snack\ViewTemplate;
 use App\Filament\Resources\SubmissionResource\Pages;
-use App\Filament\Resources\SubmissionResource\RelationManagers;
-use App\Filament\Resources\Templates\HelperFunctions;
-use App\Filament\Resources\Templates\SnackTemplates;
+use App\Filament\Resources\Helpers\HelperFunctions;
 use App\Models\Snack;
-use App\Models\Submission;
-use App\Models\User;
-use Filament\Forms;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\SelectColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
 class SubmissionResource extends Resource
@@ -44,13 +33,13 @@ class SubmissionResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema(SnackTemplates::getForm());
+            ->schema(App::make(FormTemplate::class)());
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(SnackTemplates::getTable())
+            ->columns(App::make(TableTemplate::class)())
             ->filters([
                 
             ])
@@ -59,7 +48,7 @@ class SubmissionResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ViewAction::make()
-                        ->form(SnackTemplates::getViewForm()),
+                        ->form(App::make(ViewTemplate::class)()),
                     Tables\Actions\DeleteAction::make(),
                 ]),
             ])

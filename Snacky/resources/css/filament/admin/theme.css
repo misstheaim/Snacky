@@ -1,0 +1,6 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+
+.link:hover { color: rgb(234 179 8); }

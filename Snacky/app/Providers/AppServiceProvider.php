@@ -2,8 +2,14 @@
 
 namespace App\Providers;
 
+use App\Contracts\Filament\Snack\FormTemplate;
+use App\Contracts\Filament\Snack\TableTemplate;
+use App\Contracts\Filament\Snack\ViewTemplate;
 use App\Contracts\HttpCategoriesReceiver;
 use App\Contracts\HttpProductReceiver;
+use App\Filament\Resources\Templates\SnackTableTemplate;
+use App\Filament\Resources\Templates\SnackFormTemplate;
+use App\Filament\Resources\Templates\SnackViewTemplate;
 use App\Services\UzumHttpCategoriesReceiver;
 use App\Services\UzumHttpProductReceiver;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -23,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
     public $bindings = [
         HttpCategoriesReceiver::class => UzumHttpCategoriesReceiver::class,
         HttpProductReceiver::class => UzumHttpProductReceiver::class,
+        TableTemplate::class => SnackTableTemplate::class,
+        FormTemplate::class => SnackFormTemplate::class,
+        ViewTemplate::class => SnackViewTemplate::class,
     ];
 
     /**
