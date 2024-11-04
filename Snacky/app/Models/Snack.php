@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Snack extends Model
@@ -26,5 +27,15 @@ class Snack extends Model
     public function votes() :HasMany
     {
         return $this->hasMany(Vote::class);
+    }
+
+    public function receipts() :BelongsToMany
+    {
+        return $this->belongsToMany(Receipt::class)->withTimestamps()->withPivot('item_count');
+    }
+
+    public function receiptSnack() :HasMany
+    {
+        return $this->hasMany(ReceiptSnack::class);
     }
 }

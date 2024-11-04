@@ -13,6 +13,7 @@ use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
@@ -45,16 +46,17 @@ class SnackTableTemplate implements TableTemplate
                 ->alignCenter(),
             TextColumn::make('title_ru')
                 ->wrap()
-                ->width('30%')
+                ->width('20%')
                 ->label('Title'),
             TextColumn::make('category.title_ru')
                 ->sortable()
-                ->width('20%')
+                ->width('10%')
                 ->wrap(),
             TextColumn::make('price')
                 ->numeric(decimalPlaces: 0)
                 ->prefix("UZS "),
             TextColumn::make('link')
+                ->width('5%')
                 ->formatStateUsing(function (?string $state) {
                     return new HtmlString('<style>.link:hover { color: rgb(234 179 8); }</style><a href="'.$state.'" target="_blank"> '.Blade::render('<x-heroicon-o-cursor-arrow-ripple class="link text-gray-400 w-6 h-6"/>').' </a>');
                 }),
@@ -123,7 +125,6 @@ class SnackTableTemplate implements TableTemplate
                 })
                 ->sortable()
                 ->alignCenter()
-                ->width('40%')
                 ->hidden(function (Table $table){
                     return $table->getModelLabel() == 'Snack' ? true : false;
                 });
@@ -131,13 +132,22 @@ class SnackTableTemplate implements TableTemplate
 
         if ($this->isManager || $this->isAdmin) {
             $table[] = SelectColumn::make('status')
-                ->options([
-                    'APPROVED' => 'Approved',
-                    'DISAPPROVED' => 'Disapproved',
-                    'IN_PROCESS' => 'In process'
-                ])
+                ->options(function (?Model $record) {
+                    if ($record->receipts_exists) {
+                        return [
+                            'APPROVED' => 'Approved',
+                            'IN_PROCESS' => 'In process'
+                        ];
+                    } else {
+                        return [
+                            'APPROVED' => 'Approved',
+                            'DISAPPROVED' => 'Disapproved',
+                            'IN_PROCESS' => 'In process'
+                        ];
+                    }
+                })
+                ->selectablePlaceholder(false)
                 ->alignCenter()
-                ->width('40%')
                 ->sortable();
         }
 
