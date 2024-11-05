@@ -11,6 +11,7 @@ use Exception;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\CheckboxColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
@@ -18,6 +19,9 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 
 class TableWidget extends BaseWidget
 {
@@ -27,10 +31,23 @@ class TableWidget extends BaseWidget
 
     protected static bool $isLazy = false;
 
+
+    public $up_vote = 'UPVOTE';
+    public $down_vote = 'DOWNVOTE';
+
+
     public function table(Table $table): Table
     {
         return $table
-            ->query(Snack::query()->whereIn('status', ['APPROVED', 'IN_PROCESS'])->withExists(['receipts' => fn ($query) => $query->where('receipt_id', $this->record->id)])->with('receipts')->orderBy('receipts_exists', 'desc'))
+            ->query(Snack::query()
+                ->whereIn('status', ['APPROVED', 'IN_PROCESS'])
+                ->withExists(['receipts' => fn ($query) => $query->where('receipt_id', $this->record->id)])
+                ->with('receipts')
+                ->withCount([
+                    'votes as down_votes' => function (Builder $query) {
+                        $query->where('vote_type', $this->down_vote);
+                    }])
+                ->orderBy('receipts_exists', 'desc'))
             ->heading('Snacks')
             ->searchPlaceholder('Search by Title')
             ->headerActions([
@@ -95,17 +112,47 @@ class TableWidget extends BaseWidget
                         }
                         return false;
                     }),
+                ImageColumn::make('low_image_link')
+                    ->label('Image')
+                    ->alignCenter(),
                 TextColumn::make('title_ru')
                     ->label('Title')
                     ->width('30%')
                     ->wrap()
                     ->searchable(),
                 TextColumn::make('category.title_ru'),
+                TextColumn::make('votes_count')
+                    ->label(new HtmlString(Blade::render('<x-heroicon-o-hand-thumb-up class="w-6 h-6" />')))
+                    ->width('1%')
+                    ->counts([
+                        'votes' => fn (Builder $query) => $query->where('vote_type', $this->up_vote)
+                    ])
+                    ->icon('heroicon-o-hand-thumb-up')
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $direction = match($direction) {
+                            'asc' => 'desc',
+                            'desc' => 'asc',
+                        };
+                        return $query->reorder('votes_count', $direction);
+                    }),
+                TextColumn::make('down_votes')
+                    ->label(new HtmlString(Blade::render('<x-heroicon-o-hand-thumb-down class="w-6 h-6" />')))
+                    ->width('1%')
+                    ->getStateUsing(fn (Snack $record) => $record->votes()->where('vote_type', $this->down_vote)->count())
+                    ->icon('heroicon-o-hand-thumb-down')
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $direction = match($direction) {
+                            'asc' => 'desc',
+                            'desc' => 'asc',
+                        };
+                        return $query->reorder('down_votes', $direction);
+                    }),
                 SelectColumn::make('status')
                     ->options([
                         'APPROVED' => 'Approved',
                         'IN_PROCESS' => 'In process'
                     ])
+                    ->width('20%')
                     ->selectablePlaceholder(false)
                     ->alignCenter(),
                 TextColumn::make('price')

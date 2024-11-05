@@ -10,7 +10,6 @@ use App\Filament\Resources\Helpers\HelperFunctions;
 use App\Models\Receipt;
 use App\Models\Snack;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Grouping\Group;
@@ -32,6 +31,16 @@ class SnackResource extends Resource
     protected static ?string $label = 'Snack';
 
     public ?Model $record = null;
+
+
+    protected static ?string $navigationBadgeTooltip = 'The number of unprocessed snacks';
+
+    protected static ?string $navigationBadgeColor = 'primary';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return HelperFunctions::isUser(Auth::user())->isDev() ? null : static::getModel()::where('status', 'IN_PROCESS')->count();
+    }
     
 
     public static function form(Form $form): Form
@@ -56,7 +65,13 @@ class SnackResource extends Resource
             ->filters([
                 //
             ])
-            ->query(HelperFunctions::isUser(Auth::user())->isDev() ? Snack::query()->where('status', 'APPROVED')->withExists('receipts') : Snack::query()->withExists('receipts'))
+            ->query(HelperFunctions::isUser(Auth::user())->isDev() ? Snack::query()->where('status', 'APPROVED')->withExists('receipts')->withCount([
+                'votes as down_votes' => function (Builder $query) {
+                    $query->where('vote_type', 'DOWNVOTE');
+                }]) : Snack::query()->withExists('receipts')->withCount([
+                    'votes as down_votes' => function (Builder $query) {
+                        $query->where('vote_type', 'DOWNVOTE');
+                    }]))
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),

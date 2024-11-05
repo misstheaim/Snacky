@@ -46,17 +46,20 @@ class SnackTableTemplate implements TableTemplate
                 ->alignCenter(),
             TextColumn::make('title_ru')
                 ->wrap()
-                ->width('20%')
+                ->grow()
                 ->label('Title'),
             TextColumn::make('category.title_ru')
-                ->sortable()
-                ->width('10%')
+                ->grow()
                 ->wrap(),
             TextColumn::make('price')
                 ->numeric(decimalPlaces: 0)
                 ->prefix("UZS "),
             TextColumn::make('link')
-                ->width('5%')
+                //->width('5%')
+                ->extraAttributes([
+                    'style' => 'justify-content: center;'
+                ])
+                ->alignCenter()
                 ->formatStateUsing(function (?string $state) {
                     return new HtmlString('<style>.link:hover { color: rgb(234 179 8); }</style><a href="'.$state.'" target="_blank"> '.Blade::render('<x-heroicon-o-cursor-arrow-ripple class="link text-gray-400 w-6 h-6"/>').' </a>');
                 }),
@@ -76,15 +79,14 @@ class SnackTableTemplate implements TableTemplate
                         'asc' => 'desc',
                         'desc' => 'asc',
                     };
-                    return $query->orderBy('votes_count', $direction);
+                    return $query->reorder('votes_count', $direction);
                 })
                 ->hidden(function (Table $table){
                     return $table->getModelLabel() == 'Submission' ? true : false;
                 }),
-            TextColumn::make('votes_count_down')
+            TextColumn::make('down_votes')
                 ->label(new HtmlString(Blade::render('<x-heroicon-o-hand-thumb-down class="w-6 h-6" />')))
                 ->width('1%')
-                ->getStateUsing(fn (Snack $record) => $record->votes()->where('vote_type', $this->down_vote)->count())
                 ->action(fn (Snack $record) => $this->votingFun($record, $this->down_vote, $this->user_id))
                 ->icon('heroicon-o-hand-thumb-down')
                 ->iconColor(function (Snack $record) {
@@ -95,11 +97,7 @@ class SnackTableTemplate implements TableTemplate
                         'asc' => 'desc',
                         'desc' => 'asc',
                     };
-                    return $query->withCount([
-                        'votes as down_votes' => function (Builder $query) {
-                            $query->where('vote_type', $this->down_vote);
-                        }])
-                        ->orderBy('down_votes', $direction);
+                    return $query->reorder('down_votes', $direction);
                 })
                 ->hidden(function (Table $table){
                     return $table->getModelLabel() == 'Submission' ? true : false;
@@ -123,7 +121,7 @@ class SnackTableTemplate implements TableTemplate
                     'Disapproved' => 'danger',
                     'In process' => 'gray'
                 })
-                ->sortable()
+                ->sortable(query: fn (Builder $query, string $direction) => $query->reorder('status', $direction))
                 ->alignCenter()
                 ->hidden(function (Table $table){
                     return $table->getModelLabel() == 'Snack' ? true : false;
@@ -146,9 +144,10 @@ class SnackTableTemplate implements TableTemplate
                         ];
                     }
                 })
+                ->width('2000px')
                 ->selectablePlaceholder(false)
                 ->alignCenter()
-                ->sortable();
+                ->sortable(query: fn (Builder $query, string $direction) => $query->reorder('status', $direction));
         }
 
 

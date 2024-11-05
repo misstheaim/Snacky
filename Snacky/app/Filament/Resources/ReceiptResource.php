@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReceiptResource\Pages;
 use App\Filament\Resources\ReceiptResource\RelationManagers\SnacksRelationManager;
 use App\Models\Receipt;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -95,6 +96,12 @@ class ReceiptResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ViewAction::make(),
+                    Tables\Actions\Action::make('Download pdf')
+                        ->label('Downlod PDF')
+                        ->icon('heroicon-o-arrow-down-on-square')
+                        ->action(function(?Model $record) {
+                            return redirect()->route('pdf', $record->id);
+                        }),
                     Tables\Actions\DeleteAction::make(),
                 ])
             ])

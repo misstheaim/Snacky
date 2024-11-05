@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -24,10 +25,14 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name'),
-                TextInput::make('email'),
+                TextInput::make('name')
+                    ->required(),
+                TextInput::make('email')
+                    ->required(),
                 Select::make('role')
-                    ->relationship('roles', 'role')
+                    ->relationship('roles', 'role'),
+                Hidden::make('password')
+                    ->default('developer')
             ]);
     }
 
@@ -64,7 +69,7 @@ class UserResource extends Resource
     {
         return [
             'index' => Pages\ListUsers::route('/'),
-            //'create' => Pages\CreateUser::route('/create'),
+            'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
