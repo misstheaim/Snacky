@@ -24,6 +24,9 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-enable intl mbstring
 
+RUN apt-get update && apt-get install -y nodejs
+RUN apt-get update && apt-get install -y npm
+
 COPY ./php.ini /usr/local/etc/php/conf.d/php.ini
 
 

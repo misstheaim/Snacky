@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ReceiptResource\Widgets;
 
 use App\Contracts\HttpProductReceiver;
+use App\Models\Notification as ModelsNotification;
 use App\Models\Receipt;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -100,9 +101,17 @@ class TableWidget extends BaseWidget
                                 return;
                             }
                             $this->record->snacks()->syncWithoutDetaching($record->id);
+                            ModelsNotification::create(
+                                [
+                                    'user_id' => $record->user->id,
+                                    'snack_id' => $record->id,
+                                    'type' => 'ADDED_TO_THE_RECEIPT'
+                                ]
+                            );
                             //$this->calculateAndSaveTotalProce();
                         } else {
                             $this->record->snacks()->detach($record->id);
+                            ModelsNotification::where('type', 'ADDED_TO_THE_RECEIPT')->where('user_id', $record->user->id)->where('snack_id', $record->id)->delete();
                             //$this->calculateAndSaveTotalProce();
                         }
                     })

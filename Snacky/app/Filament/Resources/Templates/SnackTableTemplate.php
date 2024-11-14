@@ -46,10 +46,8 @@ class SnackTableTemplate implements TableTemplate
                 ->alignCenter(),
             TextColumn::make('title_ru')
                 ->wrap()
-                ->grow()
                 ->label('Title'),
             TextColumn::make('category.title_ru')
-                ->grow()
                 ->wrap(),
             TextColumn::make('price')
                 ->numeric(decimalPlaces: 0)
@@ -144,7 +142,6 @@ class SnackTableTemplate implements TableTemplate
                         ];
                     }
                 })
-                ->width('2000px')
                 ->selectablePlaceholder(false)
                 ->alignCenter()
                 ->sortable(query: fn (Builder $query, string $direction) => $query->reorder('status', $direction));

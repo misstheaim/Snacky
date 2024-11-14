@@ -2,11 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\NotificationResource;
+use App\Models\Notification;
 use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
 use DutchCodingCompany\FilamentSocialite\Provider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -19,6 +22,9 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Socialite\Contracts\User as SocialiteUserContract;
 
@@ -40,6 +46,16 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+            ])
+            ->userMenuItems([
+                MenuItem::make()
+                    ->icon('heroicon-o-bell')
+                    ->color(fn () => Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->count() !== 0 ? 'primary' : 'gray')
+                    ->label(function () { 
+                        $notCount = Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->count();
+                        return 'Notifications ' . ($notCount !== 0 ? '- '.$notCount : '');
+                    })
+                    ->url(fn () => NotificationResource::getUrl('index')),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

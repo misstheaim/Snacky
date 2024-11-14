@@ -5,15 +5,16 @@ namespace App\Filament\Resources\Templates;
 use App\Contracts\Filament\Snack\ViewTemplate;
 use App\Filament\Resources\Helpers\HelperFunctions;
 use Filament\Forms\Components\Actions\Action;
-use Livewire\Component;
+use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
-use Filament\Tables\Columns\SelectColumn;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Livewire\Component as LivewireComponent;
 
 class SnackViewTemplate implements ViewTemplate
 {
@@ -34,16 +35,21 @@ class SnackViewTemplate implements ViewTemplate
                 ->columns(2)
                 ->schema([
                     Section::make()->columns(1)->schema([
-                    TextInput::make('title_ru')->required()
+                    TextInput::make('title_ru')
+                        ->disabled(true)
+                        ->required()
                         ->label('Title'),
                     Select::make('category_id')
+                        ->disabled(true)
                         ->required()
                         ->relationship('category', 'title_ru'),
                     Textarea::make('description_ru')
+                        ->disabled(true)
                         ->label('Description')
                         ->rows(5)
                         ->placeholder('Here you can write something about your product'),
                     TextInput::make('link')
+                        ->disabled(true)
                         ->url()
                         ->required()
                         ->activeUrl()
@@ -51,12 +57,36 @@ class SnackViewTemplate implements ViewTemplate
                         ->suffixAction(
                             Action::make('redirect')
                                 ->icon('heroicon-m-globe-alt')
-                                ->action(function (?string $state, Component $livewire) {
+                                ->action(function (?string $state, LivewireComponent $livewire) {
                                     $livewire->js("window.open('$state');");
                                 })
                         ),
                     TextInput::make('price')
+                        ->disabled(true)
                         ->prefix('UZS'),
+                    Select::make('status')
+                        ->hidden( ! HelperFunctions::isUser(Auth::user())->isManager())
+                        ->options(function (?Model $record) {
+                            if ($record->receipts->count() !== 0) {
+                                return [
+                                    'APPROVED' => 'Approved',
+                                    'IN_PROCESS' => 'In process'
+                                ];
+                            } else {
+                                return [
+                                    'APPROVED' => 'Approved',
+                                    'DISAPPROVED' => 'Disapproved',
+                                    'IN_PROCESS' => 'In process'
+                                ];
+                            }
+                        })
+                        ->selectablePlaceholder(false)
+                        ->live()
+                        ->disabledOn('update')
+                        ->afterStateUpdated(function ($state, ?Model $record) {
+                            $record->status = $state;
+                            $record->save();
+                        }),
                     ])->columnSpan(1),
                     Section::make()->columns(1)->schema([
                     ViewField::make('high_image_link')
@@ -65,17 +95,6 @@ class SnackViewTemplate implements ViewTemplate
                     ])->columnSpan(1)
                 ])
             );
-
-        if ($this->isManager || $this->isAdmin) {
-            $table[] = SelectColumn::make('status')
-                ->options([
-                    'APPROVED' => 'Approved',
-                    'DISAPPROVED' => 'Disapproved',
-                    'IN_PROCESS' => 'In process'
-                ])
-                ->sortable();
-        }
-
 
         return $from;
     }

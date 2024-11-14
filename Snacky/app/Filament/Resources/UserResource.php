@@ -3,8 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\Role;
 use App\Models\User;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -30,9 +32,13 @@ class UserResource extends Resource
                 TextInput::make('email')
                     ->required(),
                 Select::make('role')
-                    ->relationship('roles', 'role'),
+                    ->relationship('roles', 'role')
+                    ->selectablePlaceholder(false)
+                    ->default(fn () => Role::where('role' , config('app.dev_role'))->first()->id),
                 Hidden::make('password')
-                    ->default('developer')
+                    ->default(config('app.default_password')),
+                Placeholder::make('password_')
+                    ->content('Default password is ' . config('app.default_password')),
             ]);
     }
 

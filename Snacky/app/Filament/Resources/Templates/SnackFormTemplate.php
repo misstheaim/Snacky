@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Templates;
 
 use App\Contracts\Filament\Snack\FormTemplate;
 use App\Filament\Resources\Helpers\HelperFunctions;
+use App\Models\Snack;
 use App\Services\Helpers\HelperSortProductData;
 use App\Services\UzumHttpProductReceiver;
 use Closure;
@@ -46,11 +47,15 @@ class SnackFormTemplate implements FormTemplate
                         return;
                     }
                     $data = HelperSortProductData::getSortedProduct($record);
-                    HelperFunctions::$buffer = $data;
 
                     if (is_null($data['category_id'])) {
                         $fail('The link must be from Product category');
                     }
+                    if (Snack::where('uzum_product_id', $data['uzum_product_id'])->exists()) {
+                        $fail('The product already exists');
+                    }
+
+                    HelperFunctions::$buffer = $data;
                 }])
                 ->label('Add a link to the product on Uzum Market')
                 ->validationMessages([
@@ -68,16 +73,6 @@ class SnackFormTemplate implements FormTemplate
             Hidden::make('high_image_link'),
             Hidden::make('low_image_link'),
         );
-
-        if ($this->isManager || $this->isAdmin) {
-            $table[] = SelectColumn::make('status')
-                ->options([
-                    'APPROVED' => 'Approved',
-                    'DISAPPROVED' => 'Disapproved',
-                    'IN_PROCESS' => 'In process'
-                ])
-                ->sortable();
-        }
 
         return $from;
     }

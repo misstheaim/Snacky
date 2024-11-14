@@ -136,6 +136,7 @@ class SnackResource extends Resource
             'index' => Pages\ListSnacks::route('/'),
             'create' => Pages\CreateSnack::route('/create'),
             'edit' => Pages\EditSnack::route('/{record}/edit'),
+            'view' => Pages\ViewSnack::route('/{record}'),
         ];
     }
 }

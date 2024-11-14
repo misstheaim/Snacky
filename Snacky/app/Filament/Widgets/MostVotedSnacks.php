@@ -41,6 +41,7 @@ class MostVotedSnacks extends BaseWidget
                             $query->where('vote_type', $this->down_vote);
                         } ,
                     ])
+                    ->having('up_votes', '>', 0)
                     ->orderBy('up_votes', 'desc')->take(5)
             )
             ->paginated(false)

@@ -132,4 +132,6 @@ return [
     'admin_role' => "ADMIN",
     'manager_role' => "MANAGER",
     'dev_role' => "DEV",
+
+    'default_password' => "developer"
 ];

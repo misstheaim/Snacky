@@ -46,7 +46,14 @@ class CategoryResource extends Resource
                     ->label('Snacks count')
                     ->alignCenter()
                     ->state(function (Model $record) {
-                        return $record->snacks_count != 0 ?? '' ;
+                        return $record->snacks_count != 0 ? $record->snacks_count : '' ;
+                    })
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $direction = match($direction) {
+                            'asc' => 'desc',
+                            'desc' => 'asc',
+                        };
+                        $query->reorder('snacks_count', $direction);
                     }),
                 TextColumn::make('parent.title_ru'),
             ])
