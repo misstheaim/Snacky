@@ -42,11 +42,6 @@ class SnackObserver
             };
 
             if ($status) {
-                // Notification::upsert([[
-                //     'user_id' => $snack->user->id,
-                //     'snack_id' => $snack->id,
-                //     'type' => $status
-                // ]], uniqueBy: ['id', 'user_id', 'snack_id'], update: ['type']);
                 Notification::whereIn('type', ['APPROVED', 'REJECTED',])->updateOrCreate(
                     [
                         'user_id' => $snack->user->id,

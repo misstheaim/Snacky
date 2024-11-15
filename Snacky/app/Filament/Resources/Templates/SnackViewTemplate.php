@@ -82,7 +82,6 @@ class SnackViewTemplate implements ViewTemplate
                         })
                         ->selectablePlaceholder(false)
                         ->live()
-                        ->disabledOn('update')
                         ->afterStateUpdated(function ($state, ?Model $record) {
                             $record->status = $state;
                             $record->save();
