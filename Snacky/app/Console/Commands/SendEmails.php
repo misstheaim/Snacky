@@ -32,8 +32,8 @@ class SendEmails extends Command
         $delay = 0;
         $currentDate = now();
         $periodInterval = DateInterval::createFromDateString('1 minute');
-        $startDate = $currentDate->sub($periodInterval);                                                                                      // Uncomment this if you want to specify which email box to use //
-        $notifycations = Notification::where('sended', false)->where('updated_at', '<', $startDate)->with('user')->with('snack')/* ->whereHas('user', fn ($query) => $query->whereRaw('SUBSTRING_INDEX(email,\'@\',-1) = "gmail.com"')) */->get();
+        $startDate = $currentDate->sub($periodInterval);                                                                                                                         // Uncomment this if you want to specify which email box to use //
+        $notifycations = Notification::where('sended', false)->where('updated_at', '<', $startDate)->with('user')->with(['snack' => fn ($query) => $query->with('user')])/* ->whereHas('user', fn ($query) => $query->whereRaw('SUBSTRING_INDEX(email,\'@\',-1) = "gmail.com"')) */->get();
         foreach($notifycations as $notifycation) {
             $notifycation->user->notify((new SnackNotification($notifycation))->delay(now()->addSeconds($delay)));
             $notifycation->sended = true;

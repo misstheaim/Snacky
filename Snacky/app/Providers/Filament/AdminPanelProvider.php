@@ -90,6 +90,14 @@ class AdminPanelProvider extends PanelProvider
                             ->stateless(false)
                             // ->scopes(['...'])
                             ->with(['...']),
+                        Provider::make('microsoft')
+                            ->label('Microsoft')
+                            ->icon('fab-microsoft')
+                            ->color(Color::hex('#2f2a6b'))
+                            ->outlined(false)
+                            ->stateless(false)
+                            // ->scopes(['...'])
+                            ->with(['...']),
                     ])
                     // (optional) Override the panel slug to be used in the oauth routes. Defaults to the panel ID.
                     // ->slug('admin')

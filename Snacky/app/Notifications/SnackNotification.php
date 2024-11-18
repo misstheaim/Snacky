@@ -38,7 +38,7 @@ class SnackNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $notifyLine = match ($this->notifycation->type) {
-            'SUBMISSION' => 'Added new Snack by ' . $this->notifycation->user->name,
+            'SUBMISSION' => 'Added new Snack by ' . $this->notifycation->snack->user->name,
             'ADDED_TO_THE_RECEIPT' => 'Congratulations! Your Snack has beed added to the receipt',
             'APPROVED' => 'Your Snack has been approved!',
             'REJECTED' => 'Your Snack has been rejected.',

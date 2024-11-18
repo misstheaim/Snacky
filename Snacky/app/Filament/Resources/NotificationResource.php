@@ -76,6 +76,7 @@ class NotificationResource extends Resource
                                     ->badge()
                                     ->tooltip('Click me!'),
                                 TextColumn::make('snack.title_ru')
+                                    ->limit(50)
                                     ->url(fn (?Model $record) => SnackResource::getUrl('view', [$record->snack_id])),
                             ])->space(2),
                             Stack::make([
