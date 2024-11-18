@@ -49,6 +49,7 @@ class SnackObserver
                     ],
                     [
                         'type' => $status,
+                        'sended' => false,
                     ]
                     );
             } else {

@@ -82,14 +82,14 @@ class AdminPanelProvider extends PanelProvider
                     // (required) Add providers corresponding with providers in `config/services.php`. 
                     ->providers([
                         // Create a provider 'gitlab' corresponding to the Socialite driver with the same name.
-                        Provider::make('google')
-                            ->label('Google')
-                            ->icon('fab-google')
-                            ->color(Color::hex('#2f2a6b'))
-                            ->outlined(false)
-                            ->stateless(false)
-                            // ->scopes(['...'])
-                            ->with(['...']),
+                        // Provider::make('google')
+                        //     ->label('Google')
+                        //     ->icon('fab-google')
+                        //     ->color(Color::hex('#2f2a6b'))
+                        //     ->outlined(false)
+                        //     ->stateless(false)
+                        //     // ->scopes(['...'])
+                        //     ->with(['...']),
                         Provider::make('microsoft')
                             ->label('Microsoft')
                             ->icon('fab-microsoft')
