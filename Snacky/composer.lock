@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0ce72c7fa13b93e8d6c6df56af4a97d9",
+    "content-hash": "1444898c7289e0cd5fea39d395edfb6c",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -5833,6 +5833,85 @@
                 "source": "https://github.com/socialiteproviders/providers"
             },
             "time": "2024-07-12T02:43:55+00:00"
+        },
+        {
+            "name": "solution-forest/filament-email-2fa",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/solutionforest/filament-email-2fa.git",
+                "reference": "60d2b967586403ef682730a8235ea8924e3f8ca8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/solutionforest/filament-email-2fa/zipball/60d2b967586403ef682730a8235ea8924e3f8ca8",
+                "reference": "60d2b967586403ef682730a8235ea8924e3f8ca8",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^7.9",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^8.0",
+                "pestphp/pest": "^2.1",
+                "pestphp/pest-plugin-arch": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Solutionforest\\FilamentEmail2fa\\FilamentEmail2faServiceProvider"
+                    ],
+                    "aliases": {
+                        "FilamentEmail2fa": "Solutionforest\\FilamentEmail2fa\\Facades\\FilamentEmail2fa"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Solutionforest\\FilamentEmail2fa\\": "src/",
+                    "Solutionforest\\FilamentEmail2fa\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Angie",
+                    "email": "info@solutionforest.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "filament-email-2fa",
+            "homepage": "https://github.com/solution-forest/filament-email-2fa",
+            "keywords": [
+                "filament-email-2fa",
+                "laravel",
+                "solution-forest"
+            ],
+            "support": {
+                "issues": "https://github.com/solution-forest/filament-email-2fa/issues",
+                "source": "https://github.com/solution-forest/filament-email-2fa"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/solution-forest",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-06-21T04:09:43+00:00"
         },
         {
             "name": "spatie/browsershot",

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\Register;
 use App\Filament\Resources\NotificationResource;
 use App\Models\Notification;
 use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Socialite\Contracts\User as SocialiteUserContract;
+use Solutionforest\FilamentEmail2fa\FilamentEmail2faPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -37,7 +39,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->registration()
+            ->registration(Register::class)
             ->profile()
             ->colors([
                 'primary' => Color::Amber,
@@ -78,6 +80,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->brandName('Snacky')
             ->plugin(
+                FilamentEmail2faPlugin::make(),
                 FilamentSocialitePlugin::make()
                     // (required) Add providers corresponding with providers in `config/services.php`. 
                     ->providers([
@@ -99,6 +102,10 @@ class AdminPanelProvider extends PanelProvider
                             // ->scopes(['...'])
                             ->with(['...']),
                     ])
+                    ->domainAllowList(['ventionteams.com'])
+                    // ->authorizeUserUsing(function (FilamentSocialitePlugin $plugin, SocialiteUserContract $oauthUse) {
+                    //     return FilamentSocialitePlugin::checkDomainAllowList($plugin, $oauthUse);
+                    // })
                     // (optional) Override the panel slug to be used in the oauth routes. Defaults to the panel ID.
                     // ->slug('admin')
                     // (optional) Enable/disable registration of new (socialite-) users.

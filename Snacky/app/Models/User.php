@@ -3,16 +3,21 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Solutionforest\FilamentEmail2fa\Interfaces\RequireTwoFALogin;
+use Solutionforest\FilamentEmail2fa\Trait\HasTwoFALogin;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser, RequireTwoFALogin
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasTwoFALogin;
 
     /**
      * The attributes that are mass assignable.
@@ -46,6 +51,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+    return true;
     }
 
     public function roles() : BelongsTo 

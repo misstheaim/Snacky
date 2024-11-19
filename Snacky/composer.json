@@ -17,6 +17,7 @@
         "livewire/livewire": "^3.5",
         "owenvoke/blade-fontawesome": "^2.6",
         "socialiteproviders/microsoft": "^4.5",
+        "solution-forest/filament-email-2fa": "^1.1",
         "spatie/crawler": "^8.2"
     },
     "require-dev": {
