@@ -1,7 +1,7 @@
 <x-filament-panels::page.simple>
     <x-filament-panels::form wire:submit="save">
         <span class="text-gray-500 text-sm">
-            @lang('filament-email-2fa::filament-email-2fa.email_sent', ['email' => User::where('email', $this->email)->first()])
+            @lang('filament-email-2fa::filament-email-2fa.email_sent', ['email' => $this->email])
         </span>
         @if (session()->has('resent-success'))
             <span class="alert text-green-500  text-sm">

@@ -80,6 +80,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->brandName('Snacky')
             ->plugins([
+                FilamentEmail2faPlugin::make(),
                 FilamentSocialitePlugin::make()
                     // (required) Add providers corresponding with providers in `config/services.php`. 
                     ->providers([
