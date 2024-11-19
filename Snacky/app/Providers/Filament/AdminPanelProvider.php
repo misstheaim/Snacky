@@ -79,8 +79,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->brandName('Snacky')
-            ->plugin(
-                FilamentEmail2faPlugin::make(),
+            ->plugins([
                 FilamentSocialitePlugin::make()
                     // (required) Add providers corresponding with providers in `config/services.php`. 
                     ->providers([
@@ -117,6 +116,6 @@ class AdminPanelProvider extends PanelProvider
                     // ->userModelClass(\App\Models\User::class)
                     // // (optional) Change the associated socialite class (see below).
                     // ->socialiteUserModelClass(\App\Models\SocialiteUser::class)
-            );
+            ]);
     }
 }
