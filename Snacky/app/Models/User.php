@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\TwoFA\HasTwoFALoginCustom;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +18,10 @@ use Solutionforest\FilamentEmail2fa\Trait\HasTwoFALogin;
 
 class User extends Authenticatable implements FilamentUser, RequireTwoFALogin
 {
-    use HasFactory, Notifiable, HasTwoFALogin;
+    use HasFactory, Notifiable, HasTwoFALogin, HasTwoFALoginCustom
+    {
+        HasTwoFALoginCustom::isTwoFaVerfied insteadof HasTwoFALogin;
+    }
 
     /**
      * The attributes that are mass assignable.
