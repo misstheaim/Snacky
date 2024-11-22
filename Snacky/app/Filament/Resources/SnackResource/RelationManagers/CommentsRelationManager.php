@@ -5,7 +5,7 @@ namespace App\Filament\Resources\SnackResource\RelationManagers;
 use App\Filament\Resources\Helpers\HelperFunctions;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\TextArea;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -31,7 +31,7 @@ class CommentsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                TextArea::make('comment')
+                Textarea::make('comment')
                     ->required()
                     ->maxLength(60000)
                     ->rows(4)

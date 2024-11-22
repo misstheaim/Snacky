@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Parallax\FilamentComments\Models\Traits\HasFilamentComments;
 
 #[ObservedBy([SnackObserver::class])]
 class Snack extends Model
 {
-    use HasFactory;
+    use HasFactory, HasFilamentComments;
 
     protected $guarded = [];
 

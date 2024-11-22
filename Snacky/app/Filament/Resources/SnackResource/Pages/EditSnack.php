@@ -45,11 +45,4 @@ class EditSnack extends EditRecord
                 }),
         ];
     }
-
-    public function getRelationManagers() :array
-    {
-        return [
-            
-        ];
-    }
 }
