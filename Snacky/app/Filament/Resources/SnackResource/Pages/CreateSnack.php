@@ -28,4 +28,11 @@ class CreateSnack extends CreateRecord
     
         return $data;
     }
+
+    public function getRelationManagers() :array
+    {
+        return [
+            
+        ];
+    }
 }

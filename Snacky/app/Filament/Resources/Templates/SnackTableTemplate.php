@@ -101,6 +101,7 @@ class SnackTableTemplate implements TableTemplate
                     return $table->getModelLabel() == 'Submission' ? true : false;
                 }),
             TextColumn::make('user.name')
+                ->wrap()
                 ->searchable()
         );
 
@@ -142,8 +143,8 @@ class SnackTableTemplate implements TableTemplate
                         ];
                     }
                 })
-                ->selectablePlaceholder(false)
                 ->alignCenter()
+                ->selectablePlaceholder(false)
                 ->sortable(query: fn (Builder $query, string $direction) => $query->reorder('status', $direction));
         }
 

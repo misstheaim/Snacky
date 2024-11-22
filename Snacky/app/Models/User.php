@@ -76,6 +76,11 @@ class User extends Authenticatable implements FilamentUser, RequireTwoFALogin
     {
         return $this->hasMany(Vote::class);
     }
+    
+    public function comments() :HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
 
 
     public function isAdmin() :bool

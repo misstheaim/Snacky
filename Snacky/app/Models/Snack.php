@@ -41,4 +41,9 @@ class Snack extends Model
     {
         return $this->hasMany(ReceiptSnack::class);
     }
+
+    public function comments() :HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

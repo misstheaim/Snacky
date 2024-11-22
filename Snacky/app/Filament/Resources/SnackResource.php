@@ -7,6 +7,7 @@ use App\Contracts\Filament\Snack\FormTemplate;
 use App\Contracts\Filament\Snack\ViewTemplate;
 use App\Filament\Resources\SnackResource\Pages;
 use App\Filament\Resources\Helpers\HelperFunctions;
+use App\Filament\Resources\SnackResource\RelationManagers\CommentsRelationManager;
 use App\Models\Receipt;
 use App\Models\Snack;
 use Filament\Forms\Form;
@@ -39,7 +40,8 @@ class SnackResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return HelperFunctions::isUser(Auth::user())->isDev() ? null : static::getModel()::where('status', 'IN_PROCESS')->count();
+        $count = static::getModel()::where('status', 'IN_PROCESS')->count();
+        return HelperFunctions::isUser(Auth::user())->isDev() ? null : ($count !== 0 ? $count : null);
     }
     
 
@@ -126,7 +128,7 @@ class SnackResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CommentsRelationManager::class
         ];
     }
 
