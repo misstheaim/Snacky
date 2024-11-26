@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Pages\CommentedSnacks;
 use App\Filament\Resources\Helpers\HelperFunctions;
 use App\Filament\Resources\NotificationResource\Pages;
 use App\Filament\Resources\NotificationResource\RelationManagers;
@@ -12,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Layout\Panel;
@@ -52,9 +54,21 @@ class NotificationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Notification::query()->where('user_id', Auth::user()->id)->with(['snack.receipts'])->orderBy('status', 'desc')->orderBy('updated_at', 'desc'))
+            ->query(Notification::query()->where('user_id', Auth::user()->id)->whereIn('type', ['APPROVED', 'REJECTED', 'ADDED_TO_THE_RECEIPT', 'SUBMISSION'])->with(['snack.receipts'])->orderBy('status', 'desc')->orderBy('updated_at', 'desc'))
             ->contentGrid([
                 'sm' => 2,
+            ])
+            ->headerActions([
+                Action::make('You have new commented snacks!')
+                    ->hidden(fn () =>  Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->where('type', "COMMENTED")->count() === 0)
+                    ->url(function () {
+                        $nots = Notification::select('snack_id')->where('user_id', Auth::user()->id)->where('type', "COMMENTED")->get();
+                        $snacks = array();
+                        foreach ($nots as $not) {
+                            $snacks[] = $not->snack_id;
+                        }
+                        return CommentedSnacks::getUrl(['snacks' => $snacks]);
+                    })
             ])
             //->recordUrl(fn (?Model $record) => SnackResource::getUrl('view', [$record->snack_id]))
             ->columns([

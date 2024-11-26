@@ -21,7 +21,7 @@ return [
     /*
      * The comment model to be used
      */
-    'comment_model' => \Parallax\FilamentComments\Models\FilamentComment::class,
+    'comment_model' => App\Models\CustomFilamentComment::class,
 
     /*
      * The policy that will be used to authorize actions against comments.

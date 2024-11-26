@@ -3,7 +3,9 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\Register;
+use App\Filament\Pages\CommentedSnacks;
 use App\Filament\Resources\NotificationResource;
+use App\Models\CustomFilamentComment;
 use App\Models\Notification;
 use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
 use DutchCodingCompany\FilamentSocialite\Provider;
@@ -50,6 +52,21 @@ class AdminPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->userMenuItems([
+                MenuItem::make()
+                    ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->color(fn () => Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->where('type', "COMMENTED")->count() !== 0 ? 'primary' : 'gray')
+                    ->label(function () { 
+                        $notCount = Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->where('type', "COMMENTED")->count();
+                        return 'Commented snacks ' . ($notCount !== 0 ? '- '.$notCount : '');
+                    })
+                    ->url(function () {
+                        $nots = Notification::select('snack_id')->where('user_id', Auth::user()->id)->where('type', "COMMENTED")->get();
+                        $snacks = array();
+                        foreach ($nots as $not) {
+                            $snacks[] = $not->snack_id;
+                        }
+                        return CommentedSnacks::getUrl(['snacks' => $snacks]);
+                    }),
                 MenuItem::make()
                     ->icon('heroicon-o-bell')
                     ->color(fn () => Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->count() !== 0 ? 'primary' : 'gray')

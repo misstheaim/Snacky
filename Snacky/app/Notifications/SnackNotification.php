@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Filament\Pages\CommentedSnacks;
 use App\Filament\Resources\SnackResource;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,12 +43,15 @@ class SnackNotification extends Notification implements ShouldQueue
             'ADDED_TO_THE_RECEIPT' => 'Congratulations! Your Snack has beed added to the receipt',
             'APPROVED' => 'Your Snack has been approved!',
             'REJECTED' => 'Your Snack has been rejected.',
+            'COMMENTED' => 'Snacks, you have approved, has been commented ' . $this->notifycation->count . ' times',
         };
         return (new MailMessage)
                     ->greeting("Hello, $notifiable->name")
                     ->line('Snack related action.')
                     ->line($notifyLine)
-                    ->action('View Snack', SnackResource::getUrl('view', [$this->notifycation->snack->id]))
+                    ->action('View Snack', $this->notifycation->type === "COMMENTED" ?
+                        CommentedSnacks::getUrl(['snacks' => $this->notifycation->snacks]) :
+                        SnackResource::getUrl('view', [$this->notifycation->snack->id]))
                     ->line('Thank you for using our application!');
     }
 

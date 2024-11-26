@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Solutionforest\FilamentEmail2fa\Interfaces\RequireTwoFALogin;
@@ -80,6 +81,11 @@ class User extends Authenticatable implements FilamentUser, RequireTwoFALogin
     public function comments() :HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function snacksApprovedByUser() :BelongsToMany
+    {
+        return $this->belongsToMany(Snack::class, 'snack_approved_by_user')->withTimestamps();
     }
 
 

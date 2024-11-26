@@ -8,6 +8,7 @@ use App\Models\Snack;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SnackObserver
 {
@@ -35,10 +36,20 @@ class SnackObserver
     {
         $old_status = $snack->getOriginal('status');
         if ($old_status !== $snack->status) {
+            $manager = HelperFunctions::isUser(Auth::user());
             $status = match ($snack->status) {
-                'APPROVED' => 'APPROVED',
-                'DISAPPROVED' => 'REJECTED',
-                default => false
+                'APPROVED' => call_user_func(function () use ($snack, $manager) {
+                    $manager->snacksApprovedByUser()->attach($snack);
+                    return "APPROVED";
+                }),
+                'DISAPPROVED' => call_user_func(function () use ($snack, $manager) {
+                    DB::table('snack_approved_by_user')->where('snack_id', $snack->id)->where('user_id', $manager->id)->delete();
+                    return "REJECTED";
+                }),
+                default => call_user_func(function () use ($snack, $manager) {
+                    DB::table('snack_approved_by_user')->where('snack_id', $snack->id)->where('user_id', $manager->id)->delete();
+                    return false;
+                })
             };
 
             if ($status) {
