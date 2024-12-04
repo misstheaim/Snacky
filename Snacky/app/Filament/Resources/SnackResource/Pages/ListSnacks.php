@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\SnackResource\Pages;
 
-use App\Filament\Resources\SnackResource;
 use App\Filament\Resources\Helpers\HelperFunctions;
+use App\Filament\Resources\SnackResource;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
@@ -19,13 +19,13 @@ class ListSnacks extends ListRecords
             Action::make('refresh')
                 ->action(function () {
                     $this->resetTable();
-                })
+                }),
         ] : [
             Actions\CreateAction::make(),
             Action::make('refresh')
                 ->action(function () {
                     $this->resetTable();
-                })
+                }),
         ];
     }
 }

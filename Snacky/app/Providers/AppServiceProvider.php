@@ -7,8 +7,8 @@ use App\Contracts\Filament\Snack\TableTemplate;
 use App\Contracts\Filament\Snack\ViewTemplate;
 use App\Contracts\HttpCategoriesReceiver;
 use App\Contracts\HttpProductReceiver;
-use App\Filament\Resources\Templates\SnackTableTemplate;
 use App\Filament\Resources\Templates\SnackFormTemplate;
+use App\Filament\Resources\Templates\SnackTableTemplate;
 use App\Filament\Resources\Templates\SnackViewTemplate;
 use App\Services\UzumHttpCategoriesReceiver;
 use App\Services\UzumHttpProductReceiver;
@@ -41,11 +41,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
-            return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
+            return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
 
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            $event->extendSocialite('microsoft', Provider::class);
+            if (! $this->app->environment('local')) {
+                $event->extendSocialite('microsoft', Provider::class);
+            }
         });
     }
 }

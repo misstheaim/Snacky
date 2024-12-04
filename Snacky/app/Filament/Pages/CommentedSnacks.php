@@ -13,15 +13,19 @@ class CommentedSnacks extends Page
 
     protected static bool $shouldRegisterNavigation = false;
 
+    /**
+     * @param  array<int, Model>  $data
+     */
     public array $snacks;
 
-    protected function getHeaderWidgets() :array
+    protected function getHeaderWidgets(): array
     {
-        $this->snacks = request()->query('snacks') ?? array();
+        $this->snacks = request()->query('snacks') ?? [];
+
         return [
             CommentedSnacksTable::make([
-                'filter' => $this->snacks
-            ])
+                'filter' => $this->snacks,
+            ]),
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Contracts\HttpCategoriesReceiver;
-use App\Contracts\HttpProductReceiver;
 use Illuminate\Console\Command;
 
 class ReceiveCategories extends Command
@@ -25,7 +24,7 @@ class ReceiveCategories extends Command
     /**
      * Execute the console command.
      */
-    public function handle(HttpCategoriesReceiver $receiver)
+    public function handle(HttpCategoriesReceiver $receiver): void
     {
         $receiver->makeWork();
     }

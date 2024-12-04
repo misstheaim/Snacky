@@ -12,12 +12,12 @@ class Comment extends Model
 
     protected $guarded = [];
 
-    public function user() :BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function snack() :BelongsTo
+    public function snack(): BelongsTo
     {
         return $this->belongsTo(Snack::class);
     }

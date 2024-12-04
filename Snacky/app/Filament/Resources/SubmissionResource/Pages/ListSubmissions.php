@@ -18,7 +18,7 @@ class ListSubmissions extends ListRecords
             Action::make('refresh')
                 ->action(function () {
                     $this->resetTable();
-                })
+                }),
         ];
     }
 }

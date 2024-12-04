@@ -6,9 +6,9 @@ use App\Models\Category;
 
 class HelperSortProductData
 {
-    public static function getSortedProduct($record) 
+    public static function getSortedProduct($record)
     {
-        $result = array();
+        $result = [];
         $data = $record['payload']['data'];
         $result['uzum_product_id'] = $data['id'];
         $result['title_ru'] = $data['localizableTitle']['ru'];
@@ -22,12 +22,12 @@ class HelperSortProductData
         return $result;
     }
 
-    private static function getCategoryIdIfItExistsOrNull(array $category) :int|null
+    private static function getCategoryIdIfItExistsOrNull(array $category): ?int
     {
         $result = null;
         if (Category::where('uzum_category_id', $category['id'])->exists()) {
-            $result =  $category['id'];
-        } else if (!is_null($category['parent'])) {
+            $result = $category['id'];
+        } elseif (! is_null($category['parent'])) {
             $result = self::getCategoryIdIfItExistsOrNull($category['parent']);
         }
 

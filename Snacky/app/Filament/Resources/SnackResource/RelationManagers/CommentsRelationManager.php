@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\SnackResource\RelationManagers;
 
 use App\Filament\Resources\Helpers\HelperFunctions;
-use Filament\Forms;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
@@ -11,9 +10,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 
 class CommentsRelationManager extends RelationManager
@@ -25,7 +21,7 @@ class CommentsRelationManager extends RelationManager
     public function isReadOnly(): bool
     {
         return false;
-    } 
+    }
 
     public function form(Form $form): Form
     {
@@ -35,11 +31,16 @@ class CommentsRelationManager extends RelationManager
                     ->required()
                     ->maxLength(60000)
                     ->rows(4)
-                    ->columnSpanFull(true),
+                    ->columnSpanFull(),
                 Hidden::make('user_id')
                     ->dehydrateStateUsing(fn () => Auth::user()->id),
                 Hidden::make('snack_id')
-                    ->dehydrateStateUsing(fn (RelationManager $livewire) => $livewire->getOwnerRecord()->id),
+                    ->dehydrateStateUsing(function (RelationManager $livewire) {
+                        /** @var \App\Models\Snack $snack */
+                        $snack = $livewire->getOwnerRecord();
+
+                        return $snack->id;
+                    }),
             ]);
     }
 
@@ -67,7 +68,7 @@ class CommentsRelationManager extends RelationManager
             ])
             ->bulkActions([
                 DeleteBulkAction::make()
-                    ->hidden( ! (HelperFunctions::isUser(Auth::user())->isAdmin() || HelperFunctions::isUser(Auth::user())->isManager()))
+                    ->hidden(! (HelperFunctions::isUser(Auth::user())->isAdmin() || HelperFunctions::isUser(Auth::user())->isManager())),
             ]);
     }
 }

@@ -123,15 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-
-
     'vote_limit_per_user' => env('VOTE_LIMIT_PER_USER', 3),
     'vote_limit_timeout' => env('VOTE_LIMIT_TIMEOUT'),
 
+    'admin_role' => 'ADMIN',
+    'manager_role' => 'MANAGER',
+    'dev_role' => 'DEV',
 
-    'admin_role' => "ADMIN",
-    'manager_role' => "MANAGER",
-    'dev_role' => "DEV",
+    'default_password' => 'developer',
 
-    'default_password' => "developer"
+    'allowed_email_domains' => [
+        'ventionteams.com',
+    ],
 ];

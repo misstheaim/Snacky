@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Templates;
 
 use App\Contracts\Filament\Snack\TableTemplate;
-use App\Filament\Resources\Helpers\HelperFunctions;
 use App\Models\Snack;
 use App\Models\Vote;
 use DateInterval;
@@ -13,7 +12,6 @@ use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
@@ -21,26 +19,31 @@ use Illuminate\Support\HtmlString;
 class SnackTableTemplate implements TableTemplate
 {
     public $up_vote = 'UPVOTE';
+
     public $down_vote = 'DOWNVOTE';
 
     public $user_id;
-    
+
     public $isAdmin;
+
     public $isDev;
+
     public $isManager;
 
     public function __construct()
     {
-        $this->user_id = Auth::user()->id;
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $this->user_id = $user->id;
 
-        $this->isAdmin = HelperFunctions::isUser(Auth::user())->isAdmin();
-        $this->isDev = HelperFunctions::isUser(Auth::user())->isDev();
-        $this->isManager = HelperFunctions::isUser(Auth::user())->isManager();
+        $this->isAdmin = $user->isAdmin();
+        $this->isDev = $user->isDev();
+        $this->isManager = $user->isManager();
     }
 
-    public function __invoke() :array
+    public function __invoke(): array
     {
-        $table = array(
+        $table = [
             ImageColumn::make('low_image_link')
                 ->label('Image')
                 ->alignCenter(),
@@ -51,35 +54,36 @@ class SnackTableTemplate implements TableTemplate
                 ->wrap(),
             TextColumn::make('price')
                 ->numeric(decimalPlaces: 0)
-                ->prefix("UZS "),
+                ->prefix('UZS '),
             TextColumn::make('link')
-                //->width('5%')
                 ->extraAttributes([
-                    'style' => 'justify-content: center;'
+                    'style' => 'justify-content: center;',
                 ])
                 ->alignCenter()
                 ->formatStateUsing(function (?string $state) {
-                    return new HtmlString('<style>.link:hover { color: rgb(234 179 8); }</style><a href="'.$state.'" target="_blank"> '.Blade::render('<x-heroicon-o-cursor-arrow-ripple class="link text-gray-400 w-6 h-6"/>').' </a>');
+                    return new HtmlString('<style>.link:hover { color: rgb(234 179 8); }</style><a href="' . $state . '" target="_blank"> ' . Blade::render('<x-heroicon-o-cursor-arrow-ripple class="link text-gray-400 w-6 h-6"/>') . ' </a>');
                 }),
             TextColumn::make('votes_count')
                 ->label(new HtmlString(Blade::render('<x-heroicon-o-hand-thumb-up class="w-6 h-6" />')))
                 ->width('1%')
                 ->counts([
-                    'votes' => fn (Builder $query) => $query->where('vote_type', $this->up_vote)
+                    'votes' => fn (Builder $query) => $query->where('vote_type', $this->up_vote),
                 ])
                 ->action(fn (Snack $record) => $this->votingFun($record, $this->up_vote, $this->user_id))
                 ->icon('heroicon-o-hand-thumb-up')
                 ->iconColor(function (Snack $record) {
-                        return $this->setIconColor($record, $this->user_id, $this->up_vote);
+                    return $this->setIconColor($record, $this->user_id, $this->up_vote);
                 })
                 ->sortable(query: function (Builder $query, string $direction) {
-                    $direction = match($direction) {
+                    $direction = match ($direction) {
                         'asc' => 'desc',
                         'desc' => 'asc',
+                        default => 'desc'
                     };
+
                     return $query->reorder('votes_count', $direction);
                 })
-                ->hidden(function (Table $table){
+                ->hidden(function (Table $table) {
                     return $table->getModelLabel() == 'Submission' ? true : false;
                 }),
             TextColumn::make('down_votes')
@@ -91,55 +95,59 @@ class SnackTableTemplate implements TableTemplate
                     return $this->setIconColor($record, $this->user_id, $this->down_vote);
                 })
                 ->sortable(query: function (Builder $query, string $direction) {
-                    $direction = match($direction) {
+                    $direction = match ($direction) {
                         'asc' => 'desc',
                         'desc' => 'asc',
+                        default => 'desc'
                     };
+
                     return $query->reorder('down_votes', $direction);
                 })
-                ->hidden(function (Table $table){
+                ->hidden(function (Table $table) {
                     return $table->getModelLabel() == 'Submission' ? true : false;
                 }),
             TextColumn::make('user.name')
                 ->wrap()
-                ->searchable()
-        );
+                ->searchable(),
+        ];
 
         if ($this->isDev) {
             $table[] = TextColumn::make('status')
                 ->state(function (Snack $record) {
-                    return match($record->status) {
+                    return match ($record->status) {
                         'APPROVED' => 'Approved',
                         'DISAPPROVED' => 'Disapproved',
-                        'IN_PROCESS' => 'In process'
+                        'IN_PROCESS' => 'In process',
+                        default => 'Unknown'
                     };
                 })
                 ->badge()
-                ->color(fn (string $state) => match($state) {
+                ->color(fn (string $state) => match ($state) {
                     'Approved' => 'success',
                     'Disapproved' => 'danger',
-                    'In process' => 'gray'
+                    'In process' => 'gray',
+                    default => 'gray'
                 })
                 ->sortable(query: fn (Builder $query, string $direction) => $query->reorder('status', $direction))
                 ->alignCenter()
-                ->hidden(function (Table $table){
+                ->hidden(function (Table $table) {
                     return $table->getModelLabel() == 'Snack' ? true : false;
                 });
         }
 
         if ($this->isManager || $this->isAdmin) {
             $table[] = SelectColumn::make('status')
-                ->options(function (?Model $record) {
+                ->options(function (Snack $record) {
                     if ($record->receipts_exists) {
                         return [
                             'APPROVED' => 'Approved',
-                            'IN_PROCESS' => 'In process'
+                            'IN_PROCESS' => 'In process',
                         ];
                     } else {
                         return [
                             'APPROVED' => 'Approved',
                             'DISAPPROVED' => 'Disapproved',
-                            'IN_PROCESS' => 'In process'
+                            'IN_PROCESS' => 'In process',
                         ];
                     }
                 })
@@ -148,11 +156,8 @@ class SnackTableTemplate implements TableTemplate
                 ->sortable(query: fn (Builder $query, string $direction) => $query->reorder('status', $direction));
         }
 
-
         return $table;
     }
-
-
 
     private function votingFun(Snack $record, string $vote_type, mixed $user_id)
     {
@@ -167,28 +172,28 @@ class SnackTableTemplate implements TableTemplate
                 $if_deleted = true;
             } else {
                 $query->update(['vote_type' => $vote_type]);
+
                 return;
             }
-            
         }
-        if (!$self_click) {
+        if (! $self_click) {
             $check = $this->checkVoteLimit($user_id);
             if ($if_deleted || $check['is_available']) {
                 Vote::create([
                     'vote_type' => $vote_type,
                     'user_id' => $user_id,
-                    'snack_id' => $record->id
+                    'snack_id' => $record->id,
                 ]);
             } else {
                 Notification::make()
-                    ->title("Your voting limit is exhausted\r\nThe current limit is: " . config('app.vote_limit_per_user') . " Next vote available at: " . date_add($check['expire'], DateInterval::createFromDateString('5 hours')))
+                    ->title("Your voting limit is exhausted\r\nThe current limit is: " . config('app.vote_limit_per_user') . ' Next vote available at: ' . date_add($check['expire'], DateInterval::createFromDateString('5 hours'))->format('Y-m-d H:i:s'))
                     ->warning()
                     ->send();
             }
         }
     }
 
-    private function checkVoteLimit($user_id) :array
+    private function checkVoteLimit($user_id): array
     {
         $expire = null;
         $interval = DateInterval::createFromDateString(config('app.vote_limit_timeout'));
@@ -197,19 +202,20 @@ class SnackTableTemplate implements TableTemplate
         if ($vote_count > 0) {
             $expire = date_add(Vote::where('user_id', $user_id)->where('created_at', '>', $expire_time)->first()->created_at, $interval);
         }
-        return array('is_available' => $vote_count < config('app.vote_limit_per_user'), 'expire' => $expire);
+
+        return ['is_available' => $vote_count < config('app.vote_limit_per_user'), 'expire' => $expire];
     }
 
-
-    private function setIconColor(Snack $record, $user_id, $vote_type) 
+    private function setIconColor(Snack $record, $user_id, $vote_type)
     {
-        if ($record->votes()
+        if (
+            $record->votes()
             ->where('user_id', $user_id)
             ->where('snack_id', $record->id)
             ->where('vote_type', $vote_type)
-            ->exists()) {
+            ->exists()
+        ) {
             return 'primary';
         }
     }
-
 }

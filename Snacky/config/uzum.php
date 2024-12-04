@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'hostname' => env('UZUM_HOST'),
     'graphql_url' => env('UZUM_GRAPHQL_URL'),
     'token_url' => env('UZUM_TOKEN_URL'),
@@ -14,4 +14,4 @@ return array(
         'uz' => 'uz-UZ',
     ],
     'referer_header' => 'https://uzum.uz/',
-);
+];

@@ -4,9 +4,6 @@ namespace App\Filament\Resources\ReceiptResource\Widgets;
 
 use App\Contracts\HttpProductReceiver;
 use App\Models\Notification as ModelsNotification;
-use App\Models\Receipt;
-use Filament\Tables\Table;
-use Filament\Widgets\TableWidget as BaseWidget;
 use App\Models\Snack;
 use Exception;
 use Filament\Notifications\Notification;
@@ -16,26 +13,27 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Grouping\Group;
+use Filament\Tables\Table;
+use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 
+/** @property \App\Models\Receipt $record */
 class TableWidget extends BaseWidget
 {
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public ?Model $record = null;
 
     protected static bool $isLazy = false;
 
-
     public $up_vote = 'UPVOTE';
-    public $down_vote = 'DOWNVOTE';
 
+    public $down_vote = 'DOWNVOTE';
 
     public function table(Table $table): Table
     {
@@ -73,7 +71,7 @@ class TableWidget extends BaseWidget
                                     ->send();
                             }
                         }
-                    })
+                    }),
             ])
             ->defaultGroup(
                 Group::make('category.title_ru')
@@ -87,25 +85,26 @@ class TableWidget extends BaseWidget
                     ->label('Attach')
                     ->width('5%')
                     ->alignCenter()
-                    ->updateStateUsing(function (?Model $record, $state) {
+                    ->updateStateUsing(function (Snack $record, $state) {
                         if ($state) {
                             $isApproved = match ($record->status) {
                                 'APPROVED' => true,
                                 default => false,
                             };
-                            if ( ! $isApproved ) {
+                            if (! $isApproved) {
                                 Notification::make()
                                     ->warning()
                                     ->title('You are trying to attach unapproved snack!')
                                     ->send();
+
                                 return;
                             }
-                            $this->record->snacks()->syncWithoutDetaching($record->id);
+                            $this->record->snacks()->syncWithoutDetaching([$record->id]);
                             ModelsNotification::create(
                                 [
                                     'user_id' => $record->user->id,
                                     'snack_id' => $record->id,
-                                    'type' => 'ADDED_TO_THE_RECEIPT'
+                                    'type' => 'ADDED_TO_THE_RECEIPT',
                                 ]
                             );
                             //$this->calculateAndSaveTotalProce();
@@ -115,10 +114,11 @@ class TableWidget extends BaseWidget
                             //$this->calculateAndSaveTotalProce();
                         }
                     })
-                    ->getStateUsing(function (?Model $record) {
+                    ->getStateUsing(function (Snack $record) {
                         if ($this->record->snacks->contains($record)) {
                             return true;
                         }
+
                         return false;
                     }),
                 ImageColumn::make('low_image_link')
@@ -134,14 +134,16 @@ class TableWidget extends BaseWidget
                     ->label(new HtmlString(Blade::render('<x-heroicon-o-hand-thumb-up class="w-6 h-6" />')))
                     ->width('1%')
                     ->counts([
-                        'votes' => fn (Builder $query) => $query->where('vote_type', $this->up_vote)
+                        'votes' => fn (Builder $query) => $query->where('vote_type', $this->up_vote),
                     ])
                     ->icon('heroicon-o-hand-thumb-up')
                     ->sortable(query: function (Builder $query, string $direction) {
-                        $direction = match($direction) {
+                        $direction = match ($direction) {
                             'asc' => 'desc',
                             'desc' => 'asc',
+                            default => 'desc'
                         };
+
                         return $query->reorder('votes_count', $direction);
                     }),
                 TextColumn::make('down_votes')
@@ -150,16 +152,18 @@ class TableWidget extends BaseWidget
                     ->getStateUsing(fn (Snack $record) => $record->votes()->where('vote_type', $this->down_vote)->count())
                     ->icon('heroicon-o-hand-thumb-down')
                     ->sortable(query: function (Builder $query, string $direction) {
-                        $direction = match($direction) {
+                        $direction = match ($direction) {
                             'asc' => 'desc',
                             'desc' => 'asc',
+                            default => 'desc'
                         };
+
                         return $query->reorder('down_votes', $direction);
                     }),
                 SelectColumn::make('status')
                     ->options([
                         'APPROVED' => 'Approved',
-                        'IN_PROCESS' => 'In process'
+                        'IN_PROCESS' => 'In process',
                     ])
                     ->width('20%')
                     ->selectablePlaceholder(false)
@@ -168,34 +172,34 @@ class TableWidget extends BaseWidget
                     ->numeric()
                     ->prefix('UZS '),
                 TextInputColumn::make('item_count')
-                    ->disabled(fn (?Model $record) => ! $this->record->snacks->contains($record) ? true : false)
-                    ->updateStateUsing(function (?Model $record, $state) {
+                    ->disabled(fn (Snack $record) => ! $this->record->snacks->contains($record) ? true : false)
+                    ->updateStateUsing(function (Snack $record, $state) {
                         $this->record->snacks()->syncWithoutDetaching([$record->id => ['item_count' => $state]]);
                         //$this->calculateAndSaveTotalPriceForCountField($record, $state);
                     })
                     ->width('10%')
                     ->alignCenter()
-                    ->getStateUsing(function (?Model $record) {
+                    ->getStateUsing(function (Snack $record) {
                         $count = 1;
                         foreach ($record->receipts as $receipt) {
                             if ($receipt->id === $this->record->id) {
                                 return $receipt->pivot->item_count;
                             }
                         }
+
                         return $count;
-                        
                     }),
                 TextColumn::make('created_at')
                     ->label('Date')
                     ->dateTime(),
-                
+
             ])
             ->filters([
                 //
             ]);
     }
 
-    public function calculateAndSaveTotalProce() :void
+    public function calculateAndSaveTotalProce(): void
     {
         $total_price = 0;
         foreach ($this->record->snacks as $snack) {
@@ -205,7 +209,7 @@ class TableWidget extends BaseWidget
         $this->record->save();
     }
 
-    public function calculateAndSaveTotalPriceForCountField($record, $state) :void
+    public function calculateAndSaveTotalPriceForCountField($record, $state): void
     {
         $total_price = 0;
         foreach ($this->record->snacks as $snack) {
