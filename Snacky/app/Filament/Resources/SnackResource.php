@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources;
 
-use App\Contracts\Filament\Snack\TableTemplate;
 use App\Contracts\Filament\Snack\FormTemplate;
+use App\Contracts\Filament\Snack\TableTemplate;
 use App\Contracts\Filament\Snack\ViewTemplate;
-use App\Filament\Resources\SnackResource\Pages;
 use App\Filament\Resources\Helpers\HelperFunctions;
+use App\Filament\Resources\SnackResource\Pages;
 use App\Filament\Resources\SnackResource\RelationManagers\CommentsRelationManager;
 use App\Models\Receipt;
 use App\Models\Snack;
@@ -16,10 +16,10 @@ use Filament\Tables;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Collection;
 
 class SnackResource extends Resource
 {
@@ -33,7 +33,6 @@ class SnackResource extends Resource
 
     public ?Model $record = null;
 
-
     protected static ?string $navigationBadgeTooltip = 'The number of unprocessed snacks';
 
     protected static ?string $navigationBadgeColor = 'primary';
@@ -41,9 +40,9 @@ class SnackResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         $count = static::getModel()::where('status', 'IN_PROCESS')->count();
+
         return HelperFunctions::isUser(Auth::user())->isDev() ? null : ($count !== 0 ? $count : null);
     }
-    
 
     public static function form(Form $form): Form
     {
@@ -80,10 +79,20 @@ class SnackResource extends Resource
                     Tables\Actions\ViewAction::make()
                         ->form(App::make(ViewTemplate::class)()),
                     Tables\Actions\DeleteAction::make()
-                        ->modalDescription(fn (?Model $record) => $record->receipts_exists ? 'This snack attached to the receipt, are you sure you want to delete it? All attached receipts will be recalculated' : 'Are you sure you would like to do this?')
-                        ->color(fn (?Model $record) => $record->receipts_exists ? 'danger' : 'warning')
-                        ->modalHeading(fn (?Model $record) => $record->receipts_exists ? 'Warning! Deleting attached Snack!' : 'Delete Snack')
+                        ->modalDescription(function (?Model $record) {
+                            /** @var \App\Models\Snack $record */
+                            return $record->receipts_exists ? 'This snack attached to the receipt, are you sure you want to delete it? All attached receipts will be recalculated' : 'Are you sure you would like to do this?';
+                        })
+                        ->color(function (?Model $record) {
+                            /** @var \App\Models\Snack $record */
+                            return $record->receipts_exists ? 'danger' : 'warning';
+                        })
+                        ->modalHeading(function (?Model $record) {
+                            /** @var \App\Models\Snack $record */
+                            return $record->receipts_exists ? 'Warning! Deleting attached Snack!' : 'Delete Snack';
+                        })
                         ->before(function (?Model $record) {
+                            /** @var \App\Models\Snack $record */
                             if ($record->receipts_exists) {
                                 $receipts = Receipt::all();
                                 foreach ($receipts as $receipt) {
@@ -92,7 +101,7 @@ class SnackResource extends Resource
                             }
                         }),
                 ]),
-                
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -104,13 +113,15 @@ class SnackResource extends Resource
                         ])
                         ->action(function (Collection $records, array $arguments) {
                             if ($arguments['notAttached'] ?? false) {
-                                foreach($records as $record) {
-                                    if ( ! $record->receipts_exists) {
+                                /** @var iterable<\App\Models\Snack> $records */
+                                foreach ($records as $record) {
+                                    if (! $record->receipts_exists) {
                                         $record->delete();
                                     }
                                 }
                             } else {
-                                foreach($records as $record) {
+                                /** @var iterable<\App\Models\Snack> $records */
+                                foreach ($records as $record) {
                                     if ($record->receipts_exists) {
                                         $receipts = Receipt::all();
                                         foreach ($receipts as $receipt) {

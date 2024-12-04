@@ -3,15 +3,12 @@
 namespace App\Filament\Resources\ReceiptResource\Pages;
 
 use App\Filament\Resources\ReceiptResource;
-use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Forms\Components\Actions\Action;
+use App\Models\Receipt;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Set;
-use Illuminate\Database\Eloquent\Model;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewReceipt extends ViewRecord
 {
@@ -25,7 +22,7 @@ class ViewReceipt extends ViewRecord
                     ->schema([
                         TextInput::make('title')
                             ->required(),
-                        Textarea::make('description')
+                        Textarea::make('description'),
                     ])
                     ->columnSpan(1)
                     ->columns(1),
@@ -34,7 +31,7 @@ class ViewReceipt extends ViewRecord
                         TextInput::make('total_price')
                             ->label('')
                             ->disabled()
-                            ->afterStateHydrated(function (?Model $record, TextInput $component) {
+                            ->afterStateHydrated(function (Receipt $record, TextInput $component) {
                                 $total_price = 0;
                                 foreach ($record->snacks as $snack) {
                                     $total_price += $snack->price * $snack->pivot->item_count;
@@ -43,13 +40,13 @@ class ViewReceipt extends ViewRecord
                                 $record->save();
                                 $component->state($total_price);
                             })
-                            ->dehydrateStateUsing(fn (?Model $record) => $record->total_price)
+                            ->dehydrateStateUsing(fn (Receipt $record) => $record->total_price),
                     ])
                     ->extraAttributes(['style' => 'height: 100%;
                                                     display: flex;
                                                     align-items: center;
                                                     justify-content: center;'])
-                    ->columnSpan(1)
+                    ->columnSpan(1),
             ])
             ->columns(2);
     }

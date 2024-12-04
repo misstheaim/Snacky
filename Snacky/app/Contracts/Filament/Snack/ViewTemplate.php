@@ -2,7 +2,6 @@
 
 namespace App\Contracts\Filament\Snack;
 
-interface ViewTemplate 
+interface ViewTemplate
 {
-    
 }

@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReceiptResource\Pages;
 use App\Filament\Resources\ReceiptResource\RelationManagers\SnacksRelationManager;
 use App\Models\Receipt;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -16,7 +15,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 
 class ReceiptResource extends Resource
 {
@@ -32,18 +30,20 @@ class ReceiptResource extends Resource
                     ->schema([
                         TextInput::make('title')
                             ->required(),
-                        Textarea::make('description')
+                        Textarea::make('description'),
                     ])
                     ->columnSpan(1)
                     ->columns(1),
                 Section::make('Total Price: ')
-                    ->hidden(fn (?Model $record) => is_null($record))
+                    ->hidden(fn (?Receipt $record) => is_null($record))
                     ->schema([
                         TextInput::make('total_price')
                             ->label('')
                             ->disabled()
-                            ->afterStateHydrated(function (?Model $record, TextInput $component) {
-                                if (is_null($record)) return;
+                            ->afterStateHydrated(function (?Receipt $record, TextInput $component) {
+                                if (is_null($record)) {
+                                    return;
+                                }
                                 $total_price = 0;
                                 foreach ($record->snacks as $snack) {
                                     $total_price += $snack->price * $snack->pivot->item_count;
@@ -52,7 +52,7 @@ class ReceiptResource extends Resource
                                 $record->save();
                                 $component->state($total_price);
                             })
-                            ->dehydrateStateUsing(fn (?Model $record) => $record->total_price)
+                            ->dehydrateStateUsing(fn (Receipt $record) => $record->total_price),
                     ])
                     ->extraAttributes(['style' => 'height: 100%;
                                                     display: flex;
@@ -61,10 +61,10 @@ class ReceiptResource extends Resource
                     ->columnSpan(1)
                     ->footerActions([
                         Action::make('Update total price')
-                            ->action(function (?Model $record, Set $set) {
+                            ->action(function (Receipt $record, Set $set) {
                                 $set('total_price', $record->total_price);
-                            })
-                    ])
+                            }),
+                    ]),
             ])
             ->columns(2);
     }
@@ -99,11 +99,11 @@ class ReceiptResource extends Resource
                     Tables\Actions\Action::make('Download pdf')
                         ->label('Downlod PDF')
                         ->icon('heroicon-o-arrow-down-on-square')
-                        ->action(function(?Model $record) {
+                        ->action(function (Receipt $record) {
                             return redirect()->route('pdf', $record->id);
                         }),
                     Tables\Actions\DeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -12,54 +12,61 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Parallax\FilamentComments\Models\Traits\HasFilamentComments;
 
+/**
+ * @property string $status
+ * @property bool $receipts_exists
+ * @property mixed $pivot
+ * @property int $id
+ */
 #[ObservedBy([SnackObserver::class])]
 class Snack extends Model
 {
-    use HasFactory, HasFilamentComments;
+    use HasFactory;
+    use HasFilamentComments;
 
     protected $guarded = [];
 
-    public function category() : BelongsTo
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id', 'uzum_category_id');
     }
 
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function votes() :HasMany
+    public function votes(): HasMany
     {
         return $this->hasMany(Vote::class);
     }
 
-    public function receipts() :BelongsToMany
+    public function receipts(): BelongsToMany
     {
         return $this->belongsToMany(Receipt::class)->withTimestamps()->withPivot('item_count');
     }
 
-    public function receiptSnack() :HasMany
+    public function receiptSnack(): HasMany
     {
         return $this->hasMany(ReceiptSnack::class);
     }
 
-    public function comments() :HasMany
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function notifications() :HasMany
+    public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
     }
 
-    public function filamentComments() :MorphMany
+    public function filamentComments(): MorphMany
     {
         return $this->morphMany(CustomFilamentComment::class, 'subject');
     }
 
-    public function approvedByUser() :BelongsToMany
+    public function approvedByUser(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'snack_approved_by_user')->withTimestamps();
     }

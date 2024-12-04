@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     public function up()
     {
         $code_table = config('filament-email-2fa.code_table');
@@ -14,12 +13,9 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->morphs('user');
-            $table->string('code',12)->index();
+            $table->string('code', 12)->index();
             $table->dateTime('expiry_at');
         });
-
-
-
 
         $verify_table = config('filament-email-2fa.verify_table');
 

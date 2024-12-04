@@ -25,7 +25,7 @@ class ListCategories extends ListRecords
                     $exitcode = 0;
                     $message = null;
                     try {
-                    Artisan::call('receive-categories');
+                        Artisan::call('receive-categories');
                     } catch (Exception $e) {
                         $exitcode = 1;
                         $message = $e->getMessage();
@@ -41,7 +41,7 @@ class ListCategories extends ListRecords
                             ->send(),
                     };
                     $this->resetTable();
-                })
+                }),
         ];
     }
 }

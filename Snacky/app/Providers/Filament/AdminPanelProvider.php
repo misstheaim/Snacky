@@ -5,7 +5,6 @@ namespace App\Providers\Filament;
 use App\Filament\Auth\Register;
 use App\Filament\Pages\CommentedSnacks;
 use App\Filament\Resources\NotificationResource;
-use App\Models\CustomFilamentComment;
 use App\Models\Notification;
 use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
 use DutchCodingCompany\FilamentSocialite\Provider;
@@ -26,8 +25,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Socialite\Contracts\User as SocialiteUserContract;
 use Solutionforest\FilamentEmail2fa\FilamentEmail2faPlugin;
@@ -54,25 +51,28 @@ class AdminPanelProvider extends PanelProvider
             ->userMenuItems([
                 MenuItem::make()
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
-                    ->color(fn () => Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->where('type', "COMMENTED")->count() !== 0 ? 'primary' : 'gray')
-                    ->label(function () { 
-                        $notCount = Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->where('type', "COMMENTED")->count();
-                        return 'Commented snacks ' . ($notCount !== 0 ? '- '.$notCount : '');
+                    ->color(fn () => Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->where('type', 'COMMENTED')->count() !== 0 ? 'primary' : 'gray')
+                    ->label(function () {
+                        $notCount = Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->where('type', 'COMMENTED')->count();
+
+                        return 'Commented snacks ' . ($notCount !== 0 ? '- ' . $notCount : '');
                     })
                     ->url(function () {
-                        $nots = Notification::select('snack_id')->where('user_id', Auth::user()->id)->where('type', "COMMENTED")->get();
-                        $snacks = array();
+                        $nots = Notification::select('snack_id')->where('user_id', Auth::user()->id)->where('type', 'COMMENTED')->get();
+                        $snacks = [];
                         foreach ($nots as $not) {
                             $snacks[] = $not->snack_id;
                         }
+
                         return CommentedSnacks::getUrl(['snacks' => $snacks]);
                     }),
                 MenuItem::make()
                     ->icon('heroicon-o-bell')
                     ->color(fn () => Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->count() !== 0 ? 'primary' : 'gray')
-                    ->label(function () { 
+                    ->label(function () {
                         $notCount = Notification::where('user_id', Auth::user()->id)->where('status', 'NOT_SEEN')->count();
-                        return 'Notifications ' . ($notCount !== 0 ? '- '.$notCount : '');
+
+                        return 'Notifications ' . ($notCount !== 0 ? '- ' . $notCount : '');
                     })
                     ->url(fn () => NotificationResource::getUrl('index')),
             ])
@@ -99,7 +99,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentEmail2faPlugin::make(),
                 FilamentSocialitePlugin::make()
-                    // (required) Add providers corresponding with providers in `config/services.php`. 
+                    // (required) Add providers corresponding with providers in `config/services.php`.
                     ->providers([
                         // Create a provider 'gitlab' corresponding to the Socialite driver with the same name.
                         // Provider::make('google')
@@ -126,14 +126,14 @@ class AdminPanelProvider extends PanelProvider
                     // (optional) Override the panel slug to be used in the oauth routes. Defaults to the panel ID.
                     // ->slug('admin')
                     // (optional) Enable/disable registration of new (socialite-) users.
-                    ->registration(true)
-                    // // (optional) Enable/disable registration of new (socialite-) users using a callback.
-                    // // In this example, a login flow can only continue if there exists a user (Authenticatable) already.
-                    // ->registration(fn (string $provider, SocialiteUserContract $oauthUser, ?Authenticatable $user) => (bool) $user)
-                    // // (optional) Change the associated model class.
-                    // ->userModelClass(\App\Models\User::class)
-                    // // (optional) Change the associated socialite class (see below).
-                    // ->socialiteUserModelClass(\App\Models\SocialiteUser::class)
+                    ->registration(true),
+                // // (optional) Enable/disable registration of new (socialite-) users using a callback.
+                // // In this example, a login flow can only continue if there exists a user (Authenticatable) already.
+                // ->registration(fn (string $provider, SocialiteUserContract $oauthUser, ?Authenticatable $user) => (bool) $user)
+                // // (optional) Change the associated model class.
+                // ->userModelClass(\App\Models\User::class)
+                // // (optional) Change the associated socialite class (see below).
+                // ->socialiteUserModelClass(\App\Models\SocialiteUser::class)
             ]);
     }
 }

@@ -10,13 +10,13 @@ use App\Services\UzumHttpProductReceiver;
 use Closure;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\SelectColumn;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class SnackFormTemplate implements FormTemplate
 {
     public $isAdmin;
+
     public $isManager;
 
     public function __construct()
@@ -27,13 +27,14 @@ class SnackFormTemplate implements FormTemplate
 
     public function __invoke()
     {
-        $from = array(
+        $from = [
             TextInput::make('link')
                 ->required()
                 ->activeUrl()
-                ->rules(['valid_product' => fn() => function (string $attribute, mixed $value, Closure $fail) {
+                ->rules(['valid_product' => fn () => function (string $attribute, mixed $value, Closure $fail) {
                     if (parse_url($value)['host'] != config('uzum.hostname')) {
                         $fail('Incorrect hostname');
+
                         return;
                     }
 
@@ -44,6 +45,7 @@ class SnackFormTemplate implements FormTemplate
 
                     if (isset($record['failed'])) {
                         $fail('This is the wrong link');
+
                         return;
                     }
                     $data = HelperSortProductData::getSortedProduct($record);
@@ -60,7 +62,7 @@ class SnackFormTemplate implements FormTemplate
                 ->label('Add a link to the product on Uzum Market')
                 ->validationMessages([
                     'required' => 'Please add a link to the product.',
-                    'active_url' => 'This field must be a valid URL.'
+                    'active_url' => 'This field must be a valid URL.',
                 ]),
             Hidden::make('user_id')
                 ->default(fn () => Auth::user()->id),
@@ -72,7 +74,7 @@ class SnackFormTemplate implements FormTemplate
             Hidden::make('description_ru'),
             Hidden::make('high_image_link'),
             Hidden::make('low_image_link'),
-        );
+        ];
 
         return $from;
     }

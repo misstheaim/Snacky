@@ -9,12 +9,10 @@ Route::get('/', function () {
 });
 
 Route::get('/pdf/{receipt}', function (Receipt $receipt) {
-    $pdf = Pdf::loadView('receipt-pdf', ['receipt' =>$receipt]);
+    $pdf = Pdf::loadView('receipt-pdf', ['receipt' => $receipt]);
 
     return $pdf->download($receipt->title . '-' . $receipt->date . '.pdf');
 })->name('pdf');
-
-Route::view('/test', 'receipt-pdf', ['receipt' => Receipt::find(8)]);
 
 Route::fallback(function () {
     return redirect('/admin');

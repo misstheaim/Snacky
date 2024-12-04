@@ -10,7 +10,7 @@ class EditReceipt extends EditRecord
 {
     protected static string $resource = ReceiptResource::class;
 
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = 1;
 
     protected function getHeaderActions(): array
     {
@@ -32,11 +32,10 @@ class EditReceipt extends EditRecord
         ];
     }
 
-    public function getRelationManagers() :array
+    public function getRelationManagers(): array
     {
         return [
-            
+
         ];
     }
-
 }

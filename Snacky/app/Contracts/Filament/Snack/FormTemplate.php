@@ -2,7 +2,6 @@
 
 namespace App\Contracts\Filament\Snack;
 
-interface FormTemplate 
+interface FormTemplate
 {
-    
 }

@@ -15,7 +15,7 @@ class SnackChart extends ChartWidget
 
     protected static ?int $sort = 4;
 
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = 1;
 
     protected static bool $isLazy = false;
 
@@ -35,7 +35,7 @@ class SnackChart extends ChartWidget
                     'data' => $this->chartData('snacks', '1 day', '29 days'),
                 ],
             ],
-            'labels' => [1, 2, 3, 4, 5, 6, 7, 8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30],
+            'labels' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
         ];
     }
 
@@ -44,8 +44,7 @@ class SnackChart extends ChartWidget
         return 'line';
     }
 
-
-    protected function chartData($tableName, $interval, $period) :array
+    protected function chartData($tableName, $interval, $period): array
     {
         $currentDate = now();
         $periodInterval = DateInterval::createFromDateString($period);
@@ -65,7 +64,7 @@ class SnackChart extends ChartWidget
         SQL;
 
         $rawData = DB::select($rawSql);
-        $result = array();
+        $result = [];
         foreach ($rawData as $data) {
             $result[] = $data->cn;
         }
@@ -78,7 +77,7 @@ class SnackChart extends ChartWidget
     //     $users = Snack::where('created_at', '>', now()->sub(DateInterval::createFromDateString('30 days')))->orderBy('created_at', 'asc')->get();
 
     //     if (count($users) === 0) return array();
-        
+
     //     $data = [];
     //     $count = 0;
     //     $interval = DateInterval::createFromDateString('1 day');

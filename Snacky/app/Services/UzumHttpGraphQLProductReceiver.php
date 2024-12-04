@@ -8,46 +8,44 @@ use Illuminate\Support\Facades\Http;
 
 class UzumHttpGraphQLProductReceiver implements HttpProductReceiver
 {
-    public function receiveProductData($productId) :array
+    public function receiveProductData($productId): mixed
     {
         $token = UzumTokenReceiver::getToken();
         $response = Http::getUzumProductGraphQl()
             ->withOptions([
                 'curl' => [                                 //
-                    CURLOPT_SSL_ENABLE_ALPN => false        // Just for local development
-                ]                                           //
+                    CURLOPT_SSL_ENABLE_ALPN => false,        // Just for local development
+                ],                                           //
             ])
             ->withToken($token)
             ->withHeader('Accept-Language', config('uzum.accept_language_header.ru'))
-            ->post('/' , $this->getGraphQlQuery([
-                "productId" => $productId,
-                "linkTrans4" => "PRODUCT_240",
-                "linkTrans5" => "PRODUCT_240",
-                "linkTrans6" => "PRODUCT_240",
-                "linkTrans7" => "PRODUCT_240"
+            ->post('/', $this->getGraphQlQuery([
+                'productId' => $productId,
+                'linkTrans4' => 'PRODUCT_240',
+                'linkTrans5' => 'PRODUCT_240',
+                'linkTrans6' => 'PRODUCT_240',
+                'linkTrans7' => 'PRODUCT_240',
             ]))
             ->json();
 
         dump($response);
+
         return $response;
-        
     }
 
-    public function addReceivedDataToDatabase($data)
+    public function addReceivedDataToDatabase($data): void
     {
-        
     }
 
-    public function makeWork($productId)
+    public function makeWork($productId): void
     {
-
     }
 
-    private function getGraphQlQuery(array $variables) :array
+    private function getGraphQlQuery(array $variables): array
     {
-        $query = <<< UZUM_QUERY
-            query ProductPage(\$productId: Int!, \$linkTrans4: Transformation!, \$linkTrans6: Transformation!, \$linkTrans5: Transformation!, \$linkTrans7: Transformation!) {
-                productPage(id: \$productId) {
+        $query = <<< 'UZUM_QUERY'
+            query ProductPage($productId: Int!, $linkTrans4: Transformation!, $linkTrans6: Transformation!, $linkTrans5: Transformation!, $linkTrans7: Transformation!) {
+                productPage(id: $productId) {
                     product {
                     id
                     ordersQuantity
@@ -114,7 +112,7 @@ class UzumHttpGraphQLProductReceiver implements HttpProductReceiver
                             values {
                             id
                             photo {
-                                link(trans: \$linkTrans7) {
+                                link(trans: $linkTrans7) {
                                 high
                                 low
                                 __typename
@@ -193,7 +191,7 @@ class UzumHttpGraphQLProductReceiver implements HttpProductReceiver
                         availableAmount
                         photo {
                         key
-                        link(trans: \$linkTrans4) {
+                        link(trans: $linkTrans4) {
                             low
                             __typename
                         }
@@ -262,7 +260,7 @@ class UzumHttpGraphQLProductReceiver implements HttpProductReceiver
                         id
                         photo {
                             key
-                            link(trans: \$linkTrans6) {
+                            link(trans: $linkTrans6) {
                             low
                             __typename
                             }
@@ -278,7 +276,7 @@ class UzumHttpGraphQLProductReceiver implements HttpProductReceiver
                             id
                             photo {
                                 key
-                                link(trans: \$linkTrans5) {
+                                link(trans: $linkTrans5) {
                                 high
                                 low
                                 __typename
@@ -376,7 +374,7 @@ class UzumHttpGraphQLProductReceiver implements HttpProductReceiver
         return [
             'operationName' => 'ProductPage',
             'query' => $query,
-            'variables' => $variables
+            'variables' => $variables,
         ];
     }
 }
