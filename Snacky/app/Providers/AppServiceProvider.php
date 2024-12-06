@@ -45,9 +45,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            if (! $this->app->environment('local')) {
-                $event->extendSocialite('microsoft', Provider::class);
-            }
+            $event->extendSocialite('microsoft', Provider::class);
         });
     }
 }
