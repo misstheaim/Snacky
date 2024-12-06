@@ -9,6 +9,7 @@
         "barryvdh/laravel-dompdf": "^3.0",
         "dompdf/dompdf": "^3.0",
         "dutchcodingcompany/filament-socialite": "^2.2",
+        "enlightn/enlightn": "^2.10",
         "filament/filament": "^3.2",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
@@ -26,7 +27,6 @@
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",
-        "enlightn/enlightn": "^2.10",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^2.9",
         "laravel/dusk": "^8.2",

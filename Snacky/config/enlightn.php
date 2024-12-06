@@ -94,6 +94,11 @@ return [
     'dont_report' => [
         \Enlightn\Enlightn\Analyzers\Security\FilePermissionsAnalyzer::class,
         \Enlightn\Enlightn\Analyzers\Performance\UnusedGlobalMiddlewareAnalyzer::class,
+        \Enlightn\Enlightn\Analyzers\Performance\CacheDriverAnalyzer::class, // I need additional server for caching
+        \Enlightn\Enlightn\Analyzers\Performance\QueueDriverAnalyzer::class, // Same need additional redis server
+        \Enlightn\Enlightn\Analyzers\Performance\MinificationAnalyzer::class,
+        \Enlightn\Enlightn\Analyzers\Security\LicenseAnalyzer::class,
+        \Enlightn\Enlightn\Analyzers\Security\StableDependencyAnalyzer::class,
     ],
 
     /*

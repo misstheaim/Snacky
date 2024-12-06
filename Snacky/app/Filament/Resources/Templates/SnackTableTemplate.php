@@ -32,9 +32,9 @@ class SnackTableTemplate implements TableTemplate
 
     public function __construct()
     {
-        /** @var \App\Models\User $user */
+        /** @var ?\App\Models\User $user */
         $user = Auth::user();
-        $this->user_id = $user->id;
+        $this->user_id = $user ? $user->id : null;
 
         $this->isAdmin = $user->isAdmin();
         $this->isDev = $user->isDev();

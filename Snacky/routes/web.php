@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect('/admin');
-});
+})->name('home');
 
 Route::get('/pdf/{receipt}', function (Receipt $receipt) {
     $pdf = Pdf::loadView('receipt-pdf', ['receipt' => $receipt]);
