@@ -57,6 +57,12 @@
             ".\\vendor\\bin\\phpstan analyse",
             "@php artisan enlightn"
         ],
+        "scan-ubuntu": [
+            "./vendor/bin/pint",
+            "./vendor/bin/phpcbf --standard=PSR12 ./app",
+            "./vendor/bin/phpstan analyse",
+            "@php artisan enlightn"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
