@@ -60,8 +60,7 @@
         "scan-ubuntu": [
             "./vendor/bin/pint",
             "./vendor/bin/phpcbf --standard=PSR12 ./app",
-            "./vendor/bin/phpstan analyse",
-            "@php artisan enlightn"
+            "./vendor/bin/phpstan analyse"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
