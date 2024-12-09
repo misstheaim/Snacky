@@ -13,17 +13,17 @@ class Category extends Model
 
     protected $guarded = [];
 
-    public function snacks() : HasMany 
+    public function snacks(): HasMany
     {
         return $this->hasMany(Snack::class, 'category_id', 'uzum_category_id');
     }
 
-    public function parent() :BelongsTo
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'parent_id', 'uzum_category_id');
     }
 
-    public function childrens() :HasMany
+    public function childrens(): HasMany
     {
         return $this->hasMany(Category::class, 'parent_id', 'uzum_category_id');
     }

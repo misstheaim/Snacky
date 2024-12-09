@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\TwoFA\HasTwoFALoginCustom;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -11,16 +9,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Solutionforest\FilamentEmail2fa\Interfaces\RequireTwoFALogin;
 use Solutionforest\FilamentEmail2fa\Trait\HasTwoFALogin;
 
+/**
+ * @property-read int $id
+ */
 class User extends Authenticatable implements FilamentUser, RequireTwoFALogin
 {
-    use HasFactory, Notifiable, HasTwoFALogin, HasTwoFALoginCustom
-    {
+    use HasFactory, HasTwoFALogin, HasTwoFALoginCustom, Notifiable {
         HasTwoFALoginCustom::isTwoFaVerfied insteadof HasTwoFALogin;
     }
 
@@ -60,46 +59,45 @@ class User extends Authenticatable implements FilamentUser, RequireTwoFALogin
 
     public function canAccessPanel(Panel $panel): bool
     {
-    return true;
+        return true;
     }
 
-    public function roles() : BelongsTo 
+    public function roles(): BelongsTo
     {
         return $this->belongsTo(Role::class, 'role', 'id');
     }
 
-    public function snacks() :HasMany
+    public function snacks(): HasMany
     {
         return $this->hasMany(Snack::class);
     }
 
-    public function votes() :HasMany
+    public function votes(): HasMany
     {
         return $this->hasMany(Vote::class);
     }
-    
-    public function comments() :HasMany
+
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function snacksApprovedByUser() :BelongsToMany
+    public function snacksApprovedByUser(): BelongsToMany
     {
         return $this->belongsToMany(Snack::class, 'snack_approved_by_user')->withTimestamps();
     }
 
-
-    public function isAdmin() :bool
+    public function isAdmin(): bool
     {
         return $this->roles()->select('role')->value('role') === config('app.admin_role');
     }
 
-    public function isManager() :bool
+    public function isManager(): bool
     {
         return $this->roles()->select('role')->value('role') === config('app.manager_role');
     }
 
-    public function isDev() :bool
+    public function isDev(): bool
     {
         return $this->roles()->select('role')->value('role') === config('app.dev_role');
     }

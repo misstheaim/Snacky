@@ -25,9 +25,9 @@ class SnackUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle(HttpProductReceiver $receiver)
+    public function handle(HttpProductReceiver $receiver): void
     {
-        $this->withProgressBar(Snack::all(), function (Snack $snack) use($receiver) {
+        $this->withProgressBar(Snack::all(), function (Snack $snack) use ($receiver) {
             $receiver->makeWork($snack->uzum_product_id);
         });
     }

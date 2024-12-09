@@ -17,15 +17,15 @@ class CreateSnack extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['uzum_product_id'] =  HelperFunctions::$buffer['uzum_product_id'];
-        $data['title_ru'] =  HelperFunctions::$buffer['title_ru'];
-        $data['title_uz'] =  HelperFunctions::$buffer['title_uz'];
-        $data['price'] =  HelperFunctions::$buffer['price'];
-        $data['category_id'] =  HelperFunctions::$buffer['category_id'];
-        $data['description_ru'] =  HelperFunctions::$buffer['description_ru'];
-        $data['high_image_link'] =  HelperFunctions::$buffer['high_image_link'];
-        $data['low_image_link'] =  HelperFunctions::$buffer['low_image_link'];
-    
+        $data['uzum_product_id'] = HelperFunctions::$buffer['uzum_product_id'];
+        $data['title_ru'] = HelperFunctions::$buffer['title_ru'];
+        $data['title_uz'] = HelperFunctions::$buffer['title_uz'];
+        $data['price'] = HelperFunctions::$buffer['price'];
+        $data['category_id'] = HelperFunctions::$buffer['category_id'];
+        $data['description_ru'] = HelperFunctions::$buffer['description_ru'];
+        $data['high_image_link'] = HelperFunctions::$buffer['high_image_link'];
+        $data['low_image_link'] = HelperFunctions::$buffer['low_image_link'];
+
         return $data;
     }
 }

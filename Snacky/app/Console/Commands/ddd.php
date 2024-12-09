@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Services\UzumHttpGraphQlCategoriesReceiver;
 use App\Services\UzumHttpProductReceiver;
 use Illuminate\Console\Command;
 
@@ -25,8 +24,8 @@ class ddd extends Command
     /**
      * Execute the console command.
      */
-    public function handle(UzumHttpProductReceiver $receiver)
+    public function handle(UzumHttpProductReceiver $receiver): void
     {
-        $receiver->makeWork(152133333490);
+        //
     }
 }

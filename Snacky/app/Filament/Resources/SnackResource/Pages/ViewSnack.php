@@ -26,5 +26,4 @@ class ViewSnack extends ViewRecord
             ->schema(App::make(ViewTemplate::class)())
             ->disabled(false);
     }
-
 }

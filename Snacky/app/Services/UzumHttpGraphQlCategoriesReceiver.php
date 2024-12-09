@@ -10,51 +10,49 @@ use Illuminate\Support\Facades\Http;
 
 class UzumHttpGraphQlCategoriesReceiver implements HttpCategoriesReceiver
 {
-    public $categoriesId = array(         
+    public $categoriesId = [
         1821,
         //
-    );
+    ];
 
-
-    public function receiveCategoriesData(string $lang) :array
+    public function receiveCategoriesData(string $lang): mixed
     {
         $token = UzumTokenReceiver::getToken();
 
         $response = Http::getUzumCategoriesGraphQl()
             ->withOptions([
                 'curl' => [                                 //
-                    CURLOPT_SSL_ENABLE_ALPN => false        // Just for local development
-                ]                                           //
+                    CURLOPT_SSL_ENABLE_ALPN => false,        // Just for local development
+                ],                                           //
             ])
             ->withToken($token)
             ->withHeader('Accept-Language', config('uzum.accept_language_header.ru'))
-            ->post('/' , $this->getGraphQlQuery())
+            ->post('/', $this->getGraphQlQuery())
             ->json();
 
         return $response;
     }
 
-    public function addReceivedDataToDatabase(array $data)
+    public function addReceivedDataToDatabase(array $data): void
     {
         dump($data);
         //Category::updateOrCreate(['uzum_category_id' => $data['uzum_category_id']], $data);
     }
 
-    public function makeWork()
+    public function makeWork(): void
     {
         $response = $this->receiveCategoriesData('ru');
 
         $data = HelperSortCategoryData::getCategoriesGraphQl($response, $this->categoriesId);
-        
+
         $this->addReceivedDataToDatabase($data);
     }
 
-
-    private function getGraphQlQuery() :array
+    private function getGraphQlQuery(): array
     {
-        $query = <<< UZUM_QUERY
-        query getMakeSearch(\$queryInput: MakeSearchQueryInput!) {
-        makeSearch(query: \$queryInput) {
+        $query = <<< 'UZUM_QUERY'
+        query getMakeSearch($queryInput: MakeSearchQueryInput!) {
+        makeSearch(query: $queryInput) {
             id
             queryId
             queryText
@@ -293,27 +291,25 @@ class UzumHttpGraphQlCategoriesReceiver implements HttpCategoriesReceiver
         UZUM_QUERY;
 
         return [
-            "operationName" => "getMakeSearch",
-            "query" => $query,
-            "variables" => [
-                "queryInput" => [
-                    "categoryId" => "1821",
-                    "showAdultContent" => "TRUE",
-                    "filters" => [],
-                    "sort" => "BY_RELEVANCE_DESC",
-                    "pagination" => [
-                        "offset" => 0,
-                        "limit" => 0
+            'operationName' => 'getMakeSearch',
+            'query' => $query,
+            'variables' => [
+                'queryInput' => [
+                    'categoryId' => '1821',
+                    'showAdultContent' => 'TRUE',
+                    'filters' => [],
+                    'sort' => 'BY_RELEVANCE_DESC',
+                    'pagination' => [
+                        'offset' => 0,
+                        'limit' => 0,
                     ],
-                    "correctQuery" => false,
-                    "getFastCategories" => false,
-                    "getPromotionItems" => false,
-                    "getFastFacets" => false,
-                    "fastFacetsLimit" => 0
-                ]
-            ]
+                    'correctQuery' => false,
+                    'getFastCategories' => false,
+                    'getPromotionItems' => false,
+                    'getFastFacets' => false,
+                    'fastFacetsLimit' => 0,
+                ],
+            ],
         ];
     }
 }
-
-

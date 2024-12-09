@@ -11,7 +11,6 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
@@ -22,32 +21,35 @@ class CommentedSnacksTable extends BaseWidget
 
     protected static ?string $pollingInterval = null;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     // public static function canView(): bool
     // {
     //     return false;
     // }
 
-    public array $filter = array();
+    /**
+     * @param  array<int, mixed>  $data
+     */
+    public array $filter = [];
 
     public function table(Table $table): Table
     {
         return $table
             ->query(
-                Snack::query()->whereIn('id', $this->filter)->with('notifications', fn ($query) => $query->where('user_id', Auth::user()->id)->where('type', "COMMENTED"))
+                Snack::query()->whereIn('id', $this->filter)->with('notifications', fn ($query) => $query->where('user_id', Auth::user()->id)->where('type', 'COMMENTED'))
             )
             ->headerActions([
                 Action::make('Mark all as viewed')
-                    ->action(function() {
+                    ->action(function () {
                         $notifications = Notification::where('user_id', Auth::user()->id)->where('type', 'COMMENTED')->get();
                         foreach ($notifications as $notification) {
-                            $notification->status = "SEEN";
+                            $notification->status = 'SEEN';
                             $notification->save();
                         }
-                    })
+                    }),
             ])
-            ->recordUrl(fn (?Model $record) => SnackResource::getUrl('view', [$record->id]))
+            ->recordUrl(fn (Snack $record) => SnackResource::getUrl('view', [$record->id]))
             ->columns([
                 //Panel::make([
                 ImageColumn::make('low_image_link')
@@ -60,37 +62,40 @@ class CommentedSnacksTable extends BaseWidget
                     ->wrap(),
                 TextColumn::make('price')
                     ->numeric(decimalPlaces: 0)
-                    ->prefix("UZS "),
+                    ->prefix('UZS '),
                 TextColumn::make('link')
                     ->extraAttributes([
-                        'style' => 'justify-content: center;'
+                        'style' => 'justify-content: center;',
                     ])
                     ->alignCenter()
                     ->formatStateUsing(function (?string $state) {
-                        return new HtmlString('<style>.link:hover { color: rgb(234 179 8); }</style><a href="'.$state.'" target="_blank"> '.Blade::render('<x-heroicon-o-cursor-arrow-ripple class="link text-gray-400 w-6 h-6"/>').' </a>');
+                        return new HtmlString('<style>.link:hover { color: rgb(234 179 8); }</style><a href="' . $state . '" target="_blank"> ' . Blade::render('<x-heroicon-o-cursor-arrow-ripple class="link text-gray-400 w-6 h-6"/>') . ' </a>');
                     }),
                 TextColumn::make('user.name'),
                 TextColumn::make('notifications_count')
                     ->label('Comments count')
                     ->alignCenter()
-                    ->state(fn (?Model $record) => $record->notifications->count()),
+                    ->state(fn (Snack $record) => $record->notifications->count()),
                 TextColumn::make('status')
-                    ->state(function (Model $record) {
-                        foreach($record->notifications as $notification) {
-                            if ($notification->status === "NOT_SEEN") {
+                    ->state(function (Snack $record) {
+                        foreach ($record->notifications as $notification) {
+                            if ($notification->status === 'NOT_SEEN') {
                                 return [
                                     'new',
                                 ];
                             }
                         }
+
                         return 'viewed';
                     })
                     ->badge()
                     ->color(fn ($state) => $state === 'new' ? 'primary' : 'gray')
-                    ->action(function(?Model $record, $state) {
-                        if ($state[0] !== 'new') return;
+                    ->action(function (Snack $record, $state) {
+                        if ($state[0] !== 'new') {
+                            return;
+                        }
                         foreach ($record->notifications as $notification) {
-                            $notification->status = "SEEN";
+                            $notification->status = 'SEEN';
                             $notification->save();
                         }
                     })
@@ -98,7 +103,7 @@ class CommentedSnacksTable extends BaseWidget
             ])
             ->actions([
                 // ViewAction::make()
-                //     ->action(function(?Model $record) {
+                //     ->action(function(Snack $record) {
                 //         foreach ($record->notifications as $notification) {
                 //             if ($notification->status !== "SEEN") {
                 //                 $notification->status = "SEEN";
@@ -106,7 +111,7 @@ class CommentedSnacksTable extends BaseWidget
                 //             }
                 //         }
                 //     })
-                //     ->url(fn (?Model $record) => SnackResource::getUrl('view', [$record->id])),
+                //     ->url(fn (Snack $record) => SnackResource::getUrl('view', [$record->id])),
             ]);
     }
 }

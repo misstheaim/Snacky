@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +13,7 @@ class VerifySeeder extends Seeder
      */
     public function run(): void
     {
-        $data = array();
+        $data = [];
         $verified_users = DB::table('filament_email_2fa_verify')->get();
 
         foreach (User::all() as $user) {
@@ -26,7 +25,7 @@ class VerifySeeder extends Seeder
                     'user_id' => $user->id,
                     'session_id' => 1,
                 ];
-            } 
+            }
         }
 
         DB::table('filament_email_2fa_verify')->upsert($data, [], []);

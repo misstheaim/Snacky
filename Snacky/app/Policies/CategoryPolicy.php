@@ -14,17 +14,17 @@ class CategoryPolicy
         //
     }
 
-    public function viewAny(User $user) :bool
+    public function viewAny(User $user): bool
     {
         return $user->isManager() || $user->isAdmin();
     }
 
-    public function create(User $user) :bool
+    public function create(User $user): bool
     {
         return false;
     }
 
-    public function delete(User $user) :bool
+    public function delete(User $user): bool
     {
         return false;
     }

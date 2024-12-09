@@ -18,7 +18,7 @@ class ListRoles extends ListRecords
             Action::make('refresh')
                 ->action(function () {
                     $this->resetTable();
-                })
+                }),
         ];
     }
 }
