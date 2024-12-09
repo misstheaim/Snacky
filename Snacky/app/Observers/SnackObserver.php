@@ -17,7 +17,7 @@ class SnackObserver
      */
     public function created(Snack $snack): void
     {
-        if (HelperFunctions::isUser(Auth::user())->isDev()) {
+        if (Auth::user() && HelperFunctions::isUser(Auth::user())->isDev()) {
             $managers = User::whereHas('roles', fn (Builder $query) => $query->where('role', config('app.manager_role')))->get();
             foreach ($managers as $manager) {
                 Notification::create([

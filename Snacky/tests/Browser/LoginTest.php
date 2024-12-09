@@ -1,10 +1,7 @@
 <?php
 
 use Database\Seeders\VerifySeeder;
-use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Laravel\Dusk\Browser;
-
-uses(DatabaseTruncation::class);
 
 test('can see microsoft authentication login page', function () {
     $this->browse(function (Browser $browser) {
