@@ -52,8 +52,8 @@
     },
     "scripts": {
         "scan": [
-            ".\\vendor\\bin\\pint",
-            ".\\vendor\\bin\\phpcbf --standard=PSR12 ./app",
+            "vendor/bin/pint",
+            "vendor/bin/phpcbf --standard=PSR12 ./app",
             ".\\vendor\\bin\\phpstan analyse",
             "@php artisan enlightn"
         ],
@@ -68,7 +68,11 @@
             "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "start setupHooksScript.sh"
+        ],
+        "post-install-cmd": [
+            "start setupHooksScript.sh"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
