@@ -4,9 +4,12 @@ namespace App\Contracts;
 
 interface HttpCategoriesReceiver
 {
-    public function receiveCategoriesData(string $lang) :array;
+    public function receiveCategoriesData(string $lang): mixed;
 
-    public function addReceivedDataToDatabase(array $data);
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function addReceivedDataToDatabase(array $data): void;
 
-    public function makeWork();
+    public function makeWork(): void;
 }

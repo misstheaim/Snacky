@@ -17,9 +17,10 @@ class RedirectToHomePage
     {
         $response = $next($request);
 
-        if ( ! $request->route()) {
+        if (! $request->route()) {
             return redirect('/admin');
         }
+
         return $response;
     }
 }

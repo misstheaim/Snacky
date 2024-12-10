@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Parallax\FilamentComments\Models\FilamentComment;
 
@@ -13,10 +12,8 @@ class FilamentCommentPolicy
      */
     public function __construct()
     {
-        
     }
 
-    
     public function viewAny(Authenticatable $user): bool
     {
         return true;
@@ -32,13 +29,15 @@ class FilamentCommentPolicy
         return true;
     }
 
-    public function update(Authenticatable $user, FilamentComment $filamentComment): bool
+    public function update($user, FilamentComment $filamentComment): bool
     {
+        /** @phpstan-ignore property.notFound */
         return $user->id === $filamentComment->user_id;
     }
 
     public function delete($user, FilamentComment $filamentComment): bool
     {
+        /** @phpstan-ignore property.notFound */
         return $user->isAdmin() || $user->isManager() || $user->id === $filamentComment->user_id;
     }
 
@@ -49,6 +48,7 @@ class FilamentCommentPolicy
 
     public function restore($user, FilamentComment $filamentComment): bool
     {
+        /** @phpstan-ignore property.notFound */
         return $user->isAdmin() || $user->isManager() || $user->id === $filamentComment->user_id;
     }
 
@@ -59,6 +59,7 @@ class FilamentCommentPolicy
 
     public function forceDelete($user, FilamentComment $filamentComment): bool
     {
+        /** @phpstan-ignore property.notFound */
         return $user->isAdmin() || $user->isManager() || $user->id === $filamentComment->user_id;
     }
 

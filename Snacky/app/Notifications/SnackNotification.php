@@ -44,15 +44,17 @@ class SnackNotification extends Notification implements ShouldQueue
             'APPROVED' => 'Your Snack has been approved!',
             'REJECTED' => 'Your Snack has been rejected.',
             'COMMENTED' => 'Snacks, you have approved, has been commented ' . $this->notifycation->count . ' times',
+            default => 'Unknown type'
         };
-        return (new MailMessage)
-                    ->greeting("Hello, $notifiable->name")
-                    ->line('Snack related action.')
-                    ->line($notifyLine)
-                    ->action('View Snack', $this->notifycation->type === "COMMENTED" ?
-                        CommentedSnacks::getUrl(['snacks' => $this->notifycation->snacks]) :
-                        SnackResource::getUrl('view', [$this->notifycation->snack->id]))
-                    ->line('Thank you for using our application!');
+
+        return (new MailMessage())
+            ->greeting("Hello, $notifiable->name")
+            ->line('Snack related action.')
+            ->line($notifyLine)
+            ->action('View Snack', $this->notifycation->type === 'COMMENTED' ?
+                CommentedSnacks::getUrl(['snacks' => $this->notifycation->snacks]) :
+                SnackResource::getUrl('view', [$this->notifycation->snack->id]))
+            ->line('Thank you for using our application!');
     }
 
     /**

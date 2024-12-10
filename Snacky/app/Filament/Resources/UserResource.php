@@ -34,7 +34,7 @@ class UserResource extends Resource
                 Select::make('role')
                     ->relationship('roles', 'role')
                     ->selectablePlaceholder(false)
-                    ->default(fn () => Role::where('role' , config('app.dev_role'))->first()->id),
+                    ->default(fn () => Role::where('role', config('app.dev_role'))->first()->id),
                 Hidden::make('password')
                     ->default(config('app.default_password')),
                 Placeholder::make('password_')
@@ -49,7 +49,7 @@ class UserResource extends Resource
                 TextColumn::make('name'),
                 TextColumn::make('email')
                     ->icon('heroicon-m-envelope'),
-                TextColumn::make('roles.role')
+                TextColumn::make('roles.role'),
             ])
             ->filters([
                 //

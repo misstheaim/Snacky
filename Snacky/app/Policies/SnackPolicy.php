@@ -15,12 +15,12 @@ class SnackPolicy
         //
     }
 
-    public function update(User $user, Snack $snack) :bool
+    public function update(User $user, Snack $snack): bool
     {
         return $user->isAdmin() || $user->isManager() || $user->id === $snack->user_id;
     }
 
-    public function delete(User $user, Snack $snack) :bool
+    public function delete(User $user, Snack $snack): bool
     {
         return $user->isAdmin() || $user->isManager() || $user->id === $snack->user_id;
     }

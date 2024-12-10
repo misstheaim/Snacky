@@ -16,14 +16,14 @@ class RoleResource extends Resource
     protected static ?string $model = Role::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
-    
+
     protected static ?string $navigationGroup = 'Administrator';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('role')->required()
+                TextInput::make('role')->required(),
             ]);
     }
 
@@ -31,7 +31,7 @@ class RoleResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('role')
+                TextColumn::make('role'),
             ])
             ->filters([
                 //

@@ -20,7 +20,7 @@ class HttpServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Http::macro('getUzumToken', function() {
+        Http::macro('getUzumToken', function () {
             return Http::withHeaders([
                 'Content-Length' => 0,
                 'Host' => 'id.uzum.uz',
@@ -34,8 +34,7 @@ class HttpServiceProvider extends ServiceProvider
                 ->retry(2, 1000, throw: false);
         });
 
-
-        Http::macro('getUzumProductGraphQl', function() {
+        Http::macro('getUzumProductGraphQl', function () {
             return Http::withHeaders([
                 'User-Agent' => config('uzum.user_agent_header'),
                 'Content-Type' => 'application/json',
@@ -45,8 +44,7 @@ class HttpServiceProvider extends ServiceProvider
                 ->retry(2, 1000, throw: false);
         });
 
-
-        Http::macro('getUzumCategoriesGraphQl', function() {
+        Http::macro('getUzumCategoriesGraphQl', function () {
             return Http::withHeaders([
                 'User-Agent' => config('uzum.user_agent_header'),
                 'apollographql-client-name' => 'web-customers',
@@ -56,8 +54,7 @@ class HttpServiceProvider extends ServiceProvider
                 ->retry(2, 1000, throw: false);
         });
 
-
-        Http::macro('getUzumProduct', function() {
+        Http::macro('getUzumProduct', function () {
             return Http::withHeaders([
                 'Host' => 'api.uzum.uz',
                 'User-Agent' => config('uzum.user_agent_header'),
@@ -67,8 +64,7 @@ class HttpServiceProvider extends ServiceProvider
                 ->retry(2, 1000, throw: false);
         });
 
-
-        Http::macro('getUzumCategories', function() {
+        Http::macro('getUzumCategories', function () {
             return Http::withHeaders([
                 'Host' => 'api.uzum.uz',
                 'Authorization' => 'Bearer 1',

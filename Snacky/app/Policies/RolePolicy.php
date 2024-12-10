@@ -14,7 +14,7 @@ class RolePolicy
         //
     }
 
-    public function viewAny(User $user) :bool
+    public function viewAny(User $user): bool
     {
         return $user->isAdmin();
     }

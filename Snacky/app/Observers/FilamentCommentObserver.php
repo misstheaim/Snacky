@@ -4,7 +4,6 @@ namespace App\Observers;
 
 use App\Models\CustomFilamentComment;
 use App\Models\Notification;
-use App\Models\Snack;
 
 class FilamentCommentObserver
 {
@@ -13,11 +12,13 @@ class FilamentCommentObserver
      */
     public function created(CustomFilamentComment $filamentComment): void
     {
-        $managers = $filamentComment->subject->approvedByUser()->get();
-        foreach($managers as $manager) {
+        /** @var \App\Models\Snack $snack */
+        $snack = $filamentComment->subject;
+        $managers = $snack->approvedByUser()->get();
+        foreach ($managers as $manager) {
             Notification::create([
                 'user_id' => $manager->id,
-                'snack_id' => $filamentComment->subject->id,
+                'snack_id' => $snack->id,
                 'comment_id' => $filamentComment->id,
                 'type' => 'COMMENTED',
             ]);

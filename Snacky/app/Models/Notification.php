@@ -12,12 +12,12 @@ class Notification extends Model
 
     protected $guarded = [];
 
-    public function snack() : BelongsTo 
+    public function snack(): BelongsTo
     {
         return $this->belongsTo(Snack::class, 'snack_id', 'id');
     }
-    
-    public function user() : BelongsTo 
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
