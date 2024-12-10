@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp ../.hooks/* ../.git/hooks 
+cp ../.hooks/pre-commit ../.git/hooks 
