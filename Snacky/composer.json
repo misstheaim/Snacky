@@ -68,11 +68,12 @@
             "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "start setupHooksScript.sh"
+            "@php -r \"chmod('./setupHooksScript.sh', 0755);\"",
+            "./setupHooksScript.sh"
         ],
         "post-install-cmd": [
-            "start setupHooksScript.sh"
+            "@php -r \"chmod('./setupHooksScript.sh', 0755);\"",
+            "./setupHooksScript.sh"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
