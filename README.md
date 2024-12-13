@@ -69,7 +69,7 @@ After clonining git repository in the root folder run:
 
 ```
 docker compose up -d
-docker exec -it php_con bash -d
+docker exec -it php_con sh
 ```
 
 And in this terminal you can work with the application like any other laravel project, for example continue installation from the `composer install` step from the previous section
