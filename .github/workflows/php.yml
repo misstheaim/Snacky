@@ -10,8 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  testing:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,3 +39,35 @@ jobs:
     - name: Run test suite
       working-directory: Snacky/
       run: composer scan-ubuntu
+
+  deploy:
+    needs: [testing]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Create key
+      env: 
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_HOST_NAME: ${{ secrets.SSH_HOST_NAME }}
+        SSH_USER_NAME: ${{ secrets.SSH_USER_NAME }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "${SSH_PRIVATE_KEY}" > ~/.ssh/private_key.pem
+        chmod 600 ~/.ssh/private_key.pem
+        cat >>~/.ssh/config <<END
+        Host production
+          HostName "${SSH_HOST_NAME}"
+          User "${SSH_USER_NAME}"
+          IdentityFile ~/.ssh/private_key.pem
+          StrictHostKeyChecking no
+        END
+    - name: Connect and Deploy
+      run: |
+        ssh -T production <<EQL
+          cd /var/www/html
+          sudo git fetch
+          sudo git reset --hard origin/main
+          cd Snacky
+          sudo composer install --no-dev
+          sudo php artisan migrate --force
+        EQL

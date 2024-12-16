@@ -13,12 +13,6 @@ Firtst of all clone git repository to a local folder:
 git clone https://github.com/misstheaim/Snacky
 ```
 
-If you are interested in testing and perfomance managing tools you can switch to the testing branch:
-
-```
-git checkout origin/testing
-```
-
 This is a laravel project buit on php **8.3, laravel 11** so you will need these dependencies been installed</br>
 > [!IMPORTANT]
 > After git cloning you will need to `cd Snacky` because the project itself located in the Snacky folder and the root folder is for Docker setuping</br>
@@ -60,7 +54,7 @@ Well done the app is ready!
 </br>
 
 > [!WARNING]
-> If you switched to the testing branch before every commit will run setup of checking commands ( PhpStan, Laravel Pint, CodeSniffer, Enlightn), so it may take some time.</br>
+> Before every commit will be run setup of checking commands ( PhpStan, Laravel Pint, CodeSniffer, Enlightn), so it may take some time.</br>
 
 
 **- How to install project using Docker**
