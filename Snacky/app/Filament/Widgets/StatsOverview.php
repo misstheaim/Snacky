@@ -12,13 +12,12 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\HtmlString;
 
 class StatsOverview extends BaseWidget
 {
     protected static ?int $sort = 3;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static bool $isLazy = false;
 
@@ -50,15 +49,19 @@ class StatsOverview extends BaseWidget
         ];
     }
 
-    protected function mostPopularCategory() 
+    protected function mostPopularCategory()
     {
         $category = Category::withCount('snacks')->orderBy('snacks_count', 'desc')->first();
 
+        if (is_null($category)) {
+            return null;
+        }
         $this->total_snacks = $category->snacks_count;
+
         return $category->title_ru;
     }
 
-    protected function chartData($tableName, $interval, $period) :array
+    protected function chartData($tableName, $interval, $period): array
     {
         $currentDate = now();
         $periodInterval = DateInterval::createFromDateString($period);
@@ -78,7 +81,7 @@ class StatsOverview extends BaseWidget
         SQL;
 
         $rawData = DB::select($rawSql);
-        $result = array();
+        $result = [];
         foreach ($rawData as $data) {
             $result[] = $data->cn;
         }

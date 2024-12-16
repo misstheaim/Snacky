@@ -25,11 +25,12 @@ class SendCommentsNotification extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
-    {                                                                                                                       // Uncomment this if you want to specify which email box to use //
-        $notifycations = Notification::where('type', "COMMENTED")->where('sended', false)->with('user')->with(['snack' => fn ($query) => $query->with('user')])->whereHas('user', fn ($query) => $query->whereRaw('SUBSTRING_INDEX(email,\'@\',-1) = "gmail.com" or SUBSTRING_INDEX(email,\'@\',-1) = "ventionteams.com"'))->get();
-        $notifyToSend = array();
-        foreach($notifycations as $notifycation) {
+    public function handle(): void
+    {
+        // Uncomment this if you want to specify which email box to use //
+        $notifycations = Notification::where('type', 'COMMENTED')->where('sended', false)->with('user')->with(['snack' => fn ($query) => $query->with('user')])->whereHas('user', fn ($query) => $query->whereRaw('SUBSTRING_INDEX(email,\'@\',-1) = "gmail.com" or SUBSTRING_INDEX(email,\'@\',-1) = "ventionteams.com"'))->get();
+        $notifyToSend = [];
+        foreach ($notifycations as $notifycation) {
             if (array_key_exists($notifycation->user_id, $notifyToSend)) {
                 $notifyToSend[$notifycation->user_id]->count += 1;
                 if (! in_array($notifycation->snack->id, $notifyToSend[$notifycation->user_id]->snacks)) {
@@ -40,14 +41,14 @@ class SendCommentsNotification extends Command
                     'user' => $notifycation->user,
                     'count' => 1,
                     'type' => 'COMMENTED',
-                    'snacks' => [ $notifycation->snack->id ],
+                    'snacks' => [$notifycation->snack->id],
                 ];
             }
             $notifycation->sended = true;
             $notifycation->save();
         }
         $delay = 0;
-        foreach($notifyToSend as $notification) {
+        foreach ($notifyToSend as $notification) {
             $notification->user->notify((new SnackNotification($notification))->delay(now()->addSeconds($delay)));
             $delay += 5;
         }

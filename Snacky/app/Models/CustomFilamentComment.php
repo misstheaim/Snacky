@@ -9,5 +9,4 @@ use Parallax\FilamentComments\Models\FilamentComment;
 #[ObservedBy([FilamentCommentObserver::class])]
 class CustomFilamentComment extends FilamentComment
 {
-    
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Filament\Resources\Helpers;
 
@@ -8,7 +8,8 @@ class HelperFunctions
 {
     public static $buffer;
 
-    public static function isUser(User $user) :User {
+    public static function isUser(User $user): User
+    {
         return $user;
     }
 }
