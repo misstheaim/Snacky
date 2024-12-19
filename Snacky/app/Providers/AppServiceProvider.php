@@ -10,10 +10,12 @@ use App\Contracts\HttpProductReceiver;
 use App\Filament\Resources\Templates\SnackFormTemplate;
 use App\Filament\Resources\Templates\SnackTableTemplate;
 use App\Filament\Resources\Templates\SnackViewTemplate;
+use App\Models\User;
 use App\Services\UzumHttpCategoriesReceiver;
 use App\Services\UzumHttpProductReceiver;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use SocialiteProviders\Microsoft\Provider;
 
@@ -46,6 +48,14 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('microsoft', Provider::class);
+        });
+
+        Gate::define('viewLogViewer', function (?User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('viewTelescope', function (?User $user) {
+            return $user->isAdmin();
         });
     }
 }

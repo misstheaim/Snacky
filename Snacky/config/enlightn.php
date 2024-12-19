@@ -23,6 +23,7 @@ return [
         \Enlightn\Enlightn\Analyzers\Performance\MinificationAnalyzer::class,
         \Enlightn\Enlightn\Analyzers\Security\LicenseAnalyzer::class,
         \Enlightn\Enlightn\Analyzers\Security\StableDependencyAnalyzer::class,
+        \Enlightn\Enlightn\Analyzers\Performance\OpcacheAnalyzer::class,
     ],
 
     // If you wish to skip running some analyzers in CI mode, list the classes below.

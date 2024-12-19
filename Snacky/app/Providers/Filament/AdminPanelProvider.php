@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Auth\Register;
 use App\Filament\Pages\CommentedSnacks;
+use App\Filament\Pages\ProfileForm;
 use App\Filament\Resources\NotificationResource;
 use App\Models\Notification;
 use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
@@ -39,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->registration(Register::class)
-            ->profile()
+            ->profile(ProfileForm::class)
             ->colors([
                 'primary' => Color::Amber,
             ])

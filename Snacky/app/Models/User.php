@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\TwoFA\HasTwoFALoginCustom;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,10 +18,18 @@ use Solutionforest\FilamentEmail2fa\Trait\HasTwoFALogin;
 /**
  * @property-read int $id
  */
-class User extends Authenticatable implements FilamentUser, RequireTwoFALogin
+class User extends Authenticatable implements FilamentUser, RequireTwoFALogin, HasAvatar
 {
     use HasFactory, HasTwoFALogin, HasTwoFALoginCustom, Notifiable {
         HasTwoFALoginCustom::isTwoFaVerfied insteadof HasTwoFALogin;
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        if (! is_null($this->avatar)) {
+            return config('app.s3-url') . $this->avatar;
+        }
+        return null;
     }
 
     /**
@@ -32,6 +41,7 @@ class User extends Authenticatable implements FilamentUser, RequireTwoFALogin
         'name',
         'email',
         'password',
+        'avatar',
     ];
 
     /**

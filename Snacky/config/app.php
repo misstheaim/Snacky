@@ -135,4 +135,6 @@ return [
     'allowed_email_domains' => [
         'ventionteams.com',
     ],
+
+    's3-url' => env('AWS_URL'),
 ];
